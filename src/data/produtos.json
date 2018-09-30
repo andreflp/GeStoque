@@ -1,0 +1,130 @@
+{
+  "produtos": [
+    {
+      "id": "1",
+      "codigo": "209840",
+      "nome": "Banana",
+      "tipo": "Frutas",
+      "preco": "5,00 R$",
+      "quantidade": "52",
+      "fornecedor": "Ceasa"
+    },
+    {
+      "id": "2",
+      "codigo": "3215674",
+      "nome": "Maçã",
+      "tipo": "Frutas",
+      "preco": "5,00 R$",
+      "quantidade": "78",
+      "fornecedor": "Ceasa"
+    },
+    {
+      "id": "3",
+      "codigo": "564564",
+      "nome": "Laranja",
+      "tipo": "Frutas",
+      "preco": "5,00 R$",
+      "quantidade": "54",
+      "fornecedor": "Ceasa"
+    },
+    {
+      "id": "4",
+      "codigo": "65453",
+      "nome": "Goiaba",
+      "tipo": "Frutas",
+      "preco": "5,00 R$",
+      "quantidade": "15",
+      "fornecedor": "Ceasa"
+    },
+    {
+      "id": "5",
+      "codigo": "456453",
+      "nome": "Vodka",
+      "tipo": "Bebidas",
+      "preco": "5,00 R$",
+      "quantidade": "35",
+      "fornecedor": "Bebidas Kobrasol"
+    },
+    {
+      "id": "6",
+      "codigo": "45453",
+      "nome": "Refrigerante",
+      "tipo": "Bebidas",
+      "preco": "5,00 R$",
+      "quantidade": "54",
+      "fornecedor": "Bebidas Kobrasol"
+    },
+    {
+      "id": "7",
+      "codigo": "54543",
+      "nome": "Água",
+      "tipo": "Bebidas",
+      "preco": "5,00 R$",
+      "quantidade": "78",
+      "fornecedor": "Bebidas Kobrasol"
+    },
+    {
+      "id": "8",
+      "codigo": "64564",
+      "nome": "Cloro",
+      "tipo": "Limpeza",
+      "preco": "5,00 R$",
+      "quantidade": "21",
+      "fornecedor": "Catarina"
+    },
+    {
+      "id": "9",
+      "codigo": "456453",
+      "nome": "Amaciante",
+      "tipo": "Limpeza",
+      "preco": "5,00 R$",
+      "quantidade": "45",
+      "fornecedor": "Catarina"
+    },
+    {
+      "id": "10",
+      "codigo": "645643",
+      "nome": "Detergente",
+      "tipo": "Limpeza",
+      "preco": "5,00 R$",
+      "quantidade": "54",
+      "fornecedor": "Catarina"
+    },
+    {
+      "id": "11",
+      "codigo": "46453",
+      "nome": "Iogurte",
+      "tipo": "Laticinios",
+      "preco": "5,00 R$",
+      "quantidade": "12",
+      "fornecedor": "Tirol"
+    },
+    {
+      "id": "12",
+      "codigo": "645643",
+      "nome": "Leite",
+      "tipo": "Laticinios",
+      "preco": "5,00 R$",
+      "quantidade": "5",
+      "fornecedor": "Tirol"
+    },
+    {
+      "id": "13",
+      "codigo": "645645",
+      "nome": "Queijo",
+      "tipo": "Laticinios",
+      "preco": "5,00 R$",
+      "quantidade": "10",
+      "fornecedor": "Tirol"
+    },
+    {
+      "id": "14",
+      "codigo": "345345",
+      "nome": "Manteiga",
+      "tipo": "Laticinos",
+      "preco": "5,00 R$",
+      "quantidade": "8",
+      "fornecedor": "Tirol"
+    }
+  ]
+}

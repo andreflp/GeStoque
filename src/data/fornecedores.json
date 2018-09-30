@@ -1,0 +1,60 @@
+{
+  "fornecedores": [
+    {
+      "id": "1",
+      "nome": "Tirol",
+      "email": "tirol@tirol.com.br",
+      "cnpj": "01545565875458",
+      "telefone": "4833201524",
+      "uf": "RS"
+    },
+    {
+      "id": "2",
+      "nome": "Ambev",
+      "email": "ambev@ambev.com.br",
+      "cnpj": "01524585458754",
+      "telefone": "4833201524",
+      "uf": "RS"
+    },
+    {
+      "id": "3",
+      "nome": "Copal Alimentos",
+      "email": "copal@copal.com.br",
+      "cnpj": "06501254854785",
+      "telefone": "4833245024",
+      "uf": "SC"
+    },
+    {
+      "id": "4",
+      "nome": "Ceasa",
+      "email": "ceasa@ceasa.com.br",
+      "cnpj": "01524585458754",
+      "telefone": "4834352615",
+      "uf": "SC"
+    },
+    {
+      "id": "5",
+      "nome": "Nutrifrios",
+      "email": "nutrifrios@nutrifrios.com.br",
+      "cnpj": "01524585458754",
+      "telefone": "4834352615",
+      "uf": "SC"
+    },
+    {
+      "id": "6",
+      "nome": "Taf Distribuidora",
+      "email": "taf@taf.com.br",
+      "cnpj": "01524585458754",
+      "telefone": "4833201524",
+      "uf": "SC"
+    },
+    {
+      "id": "7",
+      "nome": "Brasil Kirin",
+      "email": "kirin@kirin.com.br",
+      "cnpj": "06501254854785",
+      "telefone": "4833201524",
+      "uf": "PR"
+    }
+  ]
+}
