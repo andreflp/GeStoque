@@ -19,10 +19,10 @@
         />
 
         <v-combobox
-          label="Tipo"
-          v-model="produto.tipo"
-          data-vv-name="tipo"
-          :error-messages="errors.collect('tipo')"
+          label="Categoria"
+          v-model="produto.categoria"
+          data-vv-name="categoria"
+          :error-messages="errors.collect('categoria')"
           v-validate="'required'"
         ></v-combobox>
 
@@ -78,7 +78,7 @@ export default {
         id: "",
         codigo: "",
         nome: "",
-        tipo: "",
+        categoria: "",
         preco: "",
         quantidade: "",
         fornecedor: ""

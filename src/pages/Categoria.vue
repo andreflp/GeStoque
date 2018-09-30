@@ -4,7 +4,7 @@
       <form ref="form" @submit.prevent="submit">
         <v-text-field
           label="Nome"
-          v-model="tipo.nome"
+          v-model="categoria.nome"
           data-vv-name="nome"
           :error-messages="errors.collect('nome')"
           v-validate="'required|max:50'"
@@ -18,12 +18,8 @@
 </template>
 
 <script>
-import { Money } from "v-money";
 import masks from "@/utils/masks/masks";
-
 export default {
-  components: { Money },
-
   $_veeValidate: {
     validator: "new"
   },
@@ -35,27 +31,71 @@ export default {
   name: "form-categoria",
   data() {
     return {
-      tipo: {
+      categoria: {
         id: "",
-        codigo: "",
-        nome: "",
-        tipo: "",
-        preco: "",
-        quantidade: "",
-        fornecedor: ""
+        nome: ""
       },
-      items: ["Fornecedor1", "Fornecedor2", "Fornecedor3", "Fornecedor4"],
+
       valid: true,
-      masks,
-      money: {
-        decimal: ",",
-        thousands: ".",
-        prefix: "R$ ",
-        suffix: "",
-        precision: 2,
-        masked: false
-      }
+      masks
     };
+  },
+
+  mounted() {
+    this.getCategoria(this.id);
+  },
+
+  methods: {
+    submit() {
+      this.$validator.validateAll().then(valid => {
+        if (valid) {
+          if (this.categoria.id) {
+            this.removerCategorias(this.categoria.id);
+          }
+          let jsonCategorias = JSON.parse(
+            window.localStorage.getItem("categorias")
+          );
+
+          jsonCategorias.data.push(this.categoria);
+          window.localStorage.setItem(
+            "categorias",
+            JSON.stringify(jsonCategorias)
+          );
+          this.$router.push("/categorias");
+        }
+      });
+    },
+    removerCategorias(id) {
+      var index = null;
+      let jsonCategorias = JSON.parse(
+        window.localStorage.getItem("categorias")
+      );
+      jsonCategorias.data.forEach((item, i) => {
+        if (item.id == id) index = i;
+      });
+      if (index > -1) {
+        jsonCategorias.data.splice(index, 1);
+        window.localStorage.setItem(
+          "categorias",
+          JSON.stringify(jsonCategorias)
+        );
+      }
+    },
+    clear() {
+      this.$refs.form.reset();
+      this.$validator.reset();
+    },
+    getCategoria(id) {
+      if (id) {
+        const categorias = JSON.parse(
+          window.localStorage.getItem("categorias")
+        );
+        const categoriaResult = categorias.data.filter(item => item.id == id);
+        if (categoriaResult && categoriaResult.length > 0) {
+          this.categoria = categoriaResult[0];
+        }
+      }
+    }
   }
 };
 </script>

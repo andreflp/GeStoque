@@ -84,12 +84,14 @@ export default {
         { title: "Dashboard", icon: "dashboard", route: "/" },
         { title: "Fornecedores", icon: "list", route: "/fornecedores" },
         { title: "Produtos", icon: "list", route: "/produtos" },
+        { title: "Categorias", icon: "list", route: "/categorias" },
+        { title: "Relatórios", icon: "assignment", route: "/relatorios" },
+
         {
           title: "Movimentações",
           icon: "compare_arrows",
           route: "/movimentacoes"
-        },
-        { title: "Relatórios", icon: "assignment", route: "/relatorios" }
+        }
       ],
       cadastros: [
         {

@@ -8,6 +8,7 @@ import Produto from '@/pages/Produto'
 import Categoria from '@/pages/Categoria'
 import Movimentacoes from '@/pages/Movimentacoes'
 import Relatorios from '@/pages/Relatorios'
+import Categorias from '@/pages/Categorias'
 
 
 Vue.use(Router)
@@ -82,6 +83,19 @@ export default new Router({
       path: '/relatorios',
       name: 'Relatórios',
       component: Relatorios,
+    },
+
+    {
+      path: '/categorias',
+      name: 'Categorias',
+      component: Categorias,
+    },
+
+    {
+      path: '/categoria/:id',
+      name: 'Info Categoria',
+      component: Categoria,
+      props: true
     },
 
 

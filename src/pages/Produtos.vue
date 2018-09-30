@@ -85,7 +85,7 @@ export default {
         value: "codigo"
       },
       { text: "Nome", value: "nome" },
-      { text: "Tipo", value: "tipo" },
+      { text: "Categorias", value: "categorias" },
       { text: "Preço", value: "preco" },
       { text: "Quantidade ", value: "quantidade" },
       { text: "Fornecedor", value: "fornecedor" },
