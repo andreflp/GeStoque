@@ -20,6 +20,7 @@
 
         <v-combobox
           label="Categoria"
+          items:="categorias"
           v-model="produto.categoria"
           data-vv-name="categoria"
           :error-messages="errors.collect('categoria')"
@@ -60,6 +61,7 @@
 <script>
 import { Money } from "v-money";
 import masks from "@/utils/masks/masks";
+import axios from "axios";
 export default {
   components: { Money },
 
@@ -81,9 +83,9 @@ export default {
         categoria: "",
         preco: "",
         quantidade: "",
-        fornecedor: ""
+        fornecedor: "",
+        categoria: ""
       },
-      items: ["Fornecedor1", "Fornecedor2", "Fornecedor3", "Fornecedor4"],
       valid: true,
       masks,
       money: {
@@ -100,33 +102,25 @@ export default {
     this.getProduto(this.id);
   },
   methods: {
-    submit() {
+    addProduto(produto) {
+      const url = "http://localhost:8080/Gestoque/produto/new";
       this.$validator.validateAll().then(valid => {
         if (valid) {
-          if (this.produto.id) {
-            this.removerProdutos(this.produto.id);
-          }
-          let jsonProdutos = JSON.parse(
-            window.localStorage.getItem("produtos")
-          );
-
-          jsonProdutos.data.push(this.produto);
-          window.localStorage.setItem("produtos", JSON.stringify(jsonProdutos));
-          this.$router.push("/produtos");
+          axios
+            .post(url, produto)
+            .then(resp => {
+              if (resp.status === 200) {
+                this.snackbar = true;
+                this.clear();
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
         }
       });
     },
-    removerProduto(id) {
-      var index = null;
-      let jsonProdutos = JSON.parse(window.localStorage.getItem("produtos"));
-      jsonProdutos.data.forEach((item, i) => {
-        if (item.id == id) index = i;
-      });
-      if (index > -1) {
-        jsonProdutos.data.splice(index, 1);
-        window.localStorage.setItem("produtos", JSON.stringify(jsonProdutos));
-      }
-    },
+
     clear() {
       this.$refs.form.reset();
       this.$validator.reset();

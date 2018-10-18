@@ -7,7 +7,7 @@
               <v-text-field label="Data Inicial" :mask="masks.date"></v-text-field>
             </v-flex>
             <v-flex xs12 sm6 md4>
-              <v-text-field label="Data Inicial" :mask="masks.date"></v-text-field>
+              <v-text-field label="Data Final" :mask="masks.date"></v-text-field>
             </v-flex>
             <v-flex xs12 sm8>
               <v-autocomplete

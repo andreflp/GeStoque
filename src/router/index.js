@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Dashboard from '@/pages/Dashboard'
-import Fornecedores from '@/pages/Fornecedores'
-import Fornecedor from '@/pages/Fornecedor'
-import Produtos from '@/pages/Produtos'
-import Produto from '@/pages/Produto'
-import Categoria from '@/pages/Categoria'
+import Fornecedores from '@/pages/fornecedores/Index'
+import Fornecedor from '@/pages/fornecedor/Index'
+import Produtos from '@/pages/produtos/Index'
+import Produto from '@/pages/produto/Index'
+import Categoria from '@/pages/categoria/Index'
 import Movimentacoes from '@/pages/Movimentacoes'
 import Relatorios from '@/pages/Relatorios'
-import Categorias from '@/pages/Categorias'
+import Categorias from '@/pages/categorias/Index'
 
 
 Vue.use(Router)

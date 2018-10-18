@@ -60,60 +60,27 @@
 </template>
 
 <script>
-import jsonCategorias from "@/data/categorias.json";
-
 export default {
-  data: () => ({
-    search: "",
-    pagination: {
-      sortBy: "name"
-    },
-    headers: [
-      {
-        text: "Nome",
-        align: "center"
+  data() {
+    return {
+      search: "",
+      pagination: {
+        sortBy: "name"
       },
-      { text: "Outros" }
-    ],
+      headers: [
+        {
+          text: "Nome",
+          align: "center"
+        },
+        { text: "Outros" }
+      ],
 
-    categorias: [
-      {
-        id: "1",
-        nome: "Frutas"
-      },
-      {
-        id: "2",
-        nome: "Carnes"
-      },
-      {
-        id: "3",
-        nome: "Legumes"
-      },
-      {
-        id: "4",
-        nome: "Frios"
-      },
-      {
-        id: "5",
-        nome: "Bebidas"
-      }
-    ]
-  }),
-
-  mounted() {
-    let jsonCategoriasString = window.localStorage.getItem("categorias");
-    if (jsonCategoriasString !== "null") {
-      this.categorias = JSON.parse(jsonCategoriasString).data;
-    } else {
-      this.categorias = jsonCategorias.data;
-      window.localStorage.setItem("categorias", jsonCategorias);
-    }
+      categorias: []
+    };
   },
+
+  mounted() {},
   methods: {
-    toggleAll() {
-      if (this.selected.length) this.selected = [];
-      else this.selected = this.categorias.slice();
-    },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
         this.pagination.descending = !this.pagination.descending;

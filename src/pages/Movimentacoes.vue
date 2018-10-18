@@ -1,32 +1,34 @@
 <template>
   <v-container>
-    <form ref="form" @submit.prevent="submit">
+    <v-flex xs12 sm8>
+      <form ref="form" @submit.prevent="submit">
+          <v-text-field
+          label="Produto"
+          data-vv-name="produto"
+          v-model="produto.nome"
+          :error-messages="errors.collect('produto')"
+          v-validate="'required|max:50'"
+        />
+
+        <v-select
+          label="Tipo"
+          data-vv-name="tipo"
+          :items="tipo"
+          :error-messages="errors.collect('tipo')"
+          v-validate="'required|max:50'"
+        ></v-select>
+
         <v-text-field
-        label="Produto"
-        data-vv-name="produto"
-        v-model="produto.nome"
-        :error-messages="errors.collect('produto')"
-        v-validate="'required|max:50'"
-      />
-
-      <v-select
-        label="Tipo"
-        data-vv-name="tipo"
-        :items="tipo"
-        :error-messages="errors.collect('tipo')"
-        v-validate="'required|max:50'"
-      ></v-select>
-
-      <v-text-field
-        label="Quantidade"
-        v-model="produto.quantidade"
-        data-vv-name="código"
-        :error-messages="errors.collect('código')"
-        v-validate="'required'"
-      />
-      <v-btn type="submit">Enviar</v-btn>
-      <v-btn>Limpar</v-btn>
-    </form>
+          label="Quantidade"
+          v-model="produto.quantidade"
+          data-vv-name="código"
+          :error-messages="errors.collect('código')"
+          v-validate="'required'"
+        />
+        <v-btn type="submit">Enviar</v-btn>
+        <v-btn>Limpar</v-btn>
+      </form>
+    </v-flex>
   </v-container>    
 </template>
 

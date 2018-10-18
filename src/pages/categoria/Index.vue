@@ -10,7 +10,7 @@
           v-validate="'required|max:50'"
         />
 
-        <v-btn type="submit">Enviar</v-btn>
+        <v-btn type="submit" @click="submit()">Enviar</v-btn>
         <v-btn @click="clear">Limpar</v-btn>
       </form>
     </v-flex>  

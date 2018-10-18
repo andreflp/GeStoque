@@ -38,10 +38,10 @@
         <tr>
           <td class="text-xs-center">{{ props.item.codigo }}</td>
           <td class="text-xs-center">{{ props.item.nome }}</td>
-          <td class="text-xs-center">{{ props.item.tipo }}</td>
+          <td class="text-xs-center">{{ props.item.categoria.nome }}</td>
           <td class="text-xs-center">{{ props.item.preco }}</td>
           <td class="text-xs-center">{{ props.item.quantidade }}</td>
-          <td class="text-xs-center">{{ props.item.fornecedor }}</td>
+          <td class="text-xs-center">{{ props.item.fornecedor.nome }}</td>
           <td class="text-xs-center">
             <v-tooltip left>
               <v-btn  flat icon color="primary" slot="activator" :to="`produto/${props.item.id}`">
@@ -71,6 +71,7 @@
 
 <script>
 import jsonProdutos from "@/data/produtos.json";
+import axios from "axios";
 
 export default {
   data: () => ({
@@ -91,149 +92,38 @@ export default {
       { text: "Fornecedor", value: "fornecedor" },
       { text: "Opções" }
     ],
-
-    produtos: [
-      {
-        id: "1",
-        codigo: "209840",
-        nome: "Banana",
-        tipo: "Frutas",
-        preco: "5,00 R$",
-        quantidade: "52",
-        fornecedor: "Ceasa"
-      },
-
-      {
-        id: "2",
-        codigo: "3215674",
-        nome: "Maçã",
-        tipo: "Frutas",
-        preco: "5,00 R$",
-        quantidade: "78",
-        fornecedor: "Ceasa"
-      },
-
-      {
-        id: "3",
-        codigo: "564564",
-        nome: "Laranja",
-        tipo: "Frutas",
-        preco: "5,00 R$",
-        quantidade: "54",
-        fornecedor: "Ceasa"
-      },
-      {
-        id: "4",
-        codigo: "65453",
-        nome: "Goiaba",
-        tipo: "Frutas",
-        preco: "5,00 R$",
-        quantidade: "15",
-        fornecedor: "Ceasa"
-      },
-      {
-        id: "5",
-        codigo: "456453",
-        nome: "Vodka",
-        tipo: "Bebidas",
-        preco: "5,00 R$",
-        quantidade: "35",
-        fornecedor: "Bebidas Kobrasol"
-      },
-      {
-        id: "6",
-        codigo: "45453",
-        nome: "Refrigerante",
-        tipo: "Bebidas",
-        preco: "5,00 R$",
-        quantidade: "54",
-        fornecedor: "Bebidas Kobrasol"
-      },
-      {
-        id: "7",
-        codigo: "54543",
-        nome: "Água",
-        tipo: "Bebidas",
-        preco: "5,00 R$",
-        quantidade: "78",
-        fornecedor: "Bebidas Kobrasol"
-      },
-      {
-        id: "8",
-        codigo: "64564",
-        nome: "Cloro",
-        tipo: "Limpeza",
-        preco: "5,00 R$",
-        quantidade: "21",
-        fornecedor: "Catarina"
-      },
-      {
-        id: "9",
-        codigo: "456453",
-        nome: "Amaciante",
-        tipo: "Limpeza",
-        preco: "5,00 R$",
-        quantidade: "45",
-        fornecedor: "Catarina"
-      },
-      {
-        id: "10",
-        codigo: "645643",
-        nome: "Detergente",
-        tipo: "Limpeza",
-        preco: "5,00 R$",
-        quantidade: "54",
-        fornecedor: "Catarina"
-      },
-      {
-        id: "11",
-        codigo: "46453",
-        nome: "Iogurte",
-        tipo: "Laticinios",
-        preco: "5,00 R$",
-        quantidade: "12",
-        fornecedor: "Tirol"
-      },
-      {
-        id: "12",
-        codigo: "645643",
-        nome: "Leite",
-        tipo: "Laticinios",
-        preco: "5,00 R$",
-        quantidade: "5",
-        fornecedor: "Tirol"
-      },
-      {
-        id: "13",
-        codigo: "645645",
-        nome: "Queijo",
-        tipo: "Laticinios",
-        preco: "5,00 R$",
-        quantidade: "10",
-        fornecedor: "Tirol"
-      },
-      {
-        id: "14",
-        codigo: "345345",
-        nome: "Manteiga",
-        tipo: "Laticinos",
-        preco: "5,00 R$",
-        quantidade: "8",
-        fornecedor: "Tirol"
-      }
-    ]
+    produtos: []
   }),
 
   mounted() {
-    let jsonProdutosString = window.localStorage.getItem("produtos");
-    if (jsonProdutosString !== "null") {
-      this.produtos = JSON.parse(jsonProdutosString).data;
-    } else {
-      this.produtos = jsonProdutos.data;
-      window.localStorage.setItem("produtos", jsonProdutos);
-    }
+    this.getAll();
   },
   methods: {
+    getAllProdutos() {
+      axios
+        .get("ge/produto/produtos")
+        .then(function(resp) {
+          this.produtos = resp.data;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+
+    getAll() {
+      let url = "http://localhost:8080/Gestoque/produto/produtos";
+      let vm = this;
+      axios
+        .get(url)
+        .then(function(resp) {
+          vm.produtos = resp.data;
+          console.log(resp.data);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+
     toggleAll() {
       if (this.selected.length) this.selected = [];
       else this.selected = this.produtos.slice();

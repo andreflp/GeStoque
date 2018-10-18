@@ -6,6 +6,7 @@
           <transition name="router-anim" >
             <router-view/>
           </transition>  
+          
         </MyBody>  
     </v-app>
 </template>

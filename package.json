@@ -11,13 +11,17 @@
   },
   "dependencies": {
     "animate.css": "^3.7.0",
+    "axios": "^0.18.0",
+    "jsonp": "^0.2.1",
     "material-design-icons-iconfont": "^3.0.3",
     "string-mask": "^0.3.0",
     "v-money": "^0.8.1",
     "vee-validate": "^2.1.0-beta.9",
     "vue": "^2.5.2",
+    "vue-i18n": "^8.1.0",
     "vue-router": "^3.0.1",
-    "vuetify": "^1.2.3"
+    "vuetify": "^1.2.3",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
