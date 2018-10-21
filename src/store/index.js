@@ -2,18 +2,21 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import Fornecedores from '../pages/fornecedores/store'
 import Fornecedor from '../pages/fornecedor/store'
+import Categorias from '../pages/categorias/store'
+import Categoria from '../pages/categoria/store'
+import Produtos from '../pages/produtos/store'
+import Produto from '../pages/produto/store'
 
 Vue.use(Vuex);
 
 
-const modules = {
-  Fornecedores,
-  Fornecedor
-}
-
 export default new Vuex.Store({
   modules: {
     Fornecedores,
-    Fornecedor
+    Fornecedor,
+    Categorias,
+    Categoria,
+    Produtos,
+    Produto
   }
 })

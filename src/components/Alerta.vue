@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import { EventBus } from "@/data/event-bus.js";
 export default {
   name: "alerta",
 

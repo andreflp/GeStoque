@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <form ref="form" @submit.prevent="submit">
+    <form ref="form" @submit.prevent="addProduto">
       <v-flex xs12 sm8>
         <v-text-field
           label="Nome"
@@ -18,14 +18,29 @@
           v-validate="'required'"
         />
 
-        <v-combobox
+        <v-autocomplete
+          label="Fornecedores"
+          v-model="produto.fornecedor"
+          :items="fornecedores"
+          item-text="nome"
+          item-value="id"
+          data-vv-name="fornecedor"
+          :error-messages="errors.collect('fornecedor')"
+          v-validate="'required'"
+          return-object
+        ></v-autocomplete>
+
+        <v-autocomplete
           label="Categoria"
-          items:="categorias"
           v-model="produto.categoria"
+          :items="categorias"
+          item-text="nome"
+          item-value="id"
+          return-object
           data-vv-name="categoria"
           :error-messages="errors.collect('categoria')"
           v-validate="'required'"
-        ></v-combobox>
+        ></v-autocomplete>
 
         <v-text-field
           label="Preço"
@@ -43,16 +58,8 @@
           v-validate="'required'"
         />
       
-        <v-combobox
-          v-model="produto.fornecedor"
-          :items="items"
-          label="Fornecedor"
-          data-vv-name="fornecedor"
-          :error-messages="errors.collect('fornecedor')"
-          v-validate="'required'"
-        ></v-combobox>
       </v-flex>  
-      <v-btn type="submit">Enviar</v-btn>
+      <v-btn @click="addProduto(produto)">Enviar</v-btn>
       <v-btn @click="clear">Limpar</v-btn>
     </form>
   </v-container>
@@ -62,8 +69,9 @@
 import { Money } from "v-money";
 import masks from "@/utils/masks/masks";
 import axios from "axios";
+import Alerta from "@/components/Alerta";
 export default {
-  components: { Money },
+  components: { Money, Alerta },
 
   $_veeValidate: {
     validator: "new"
@@ -80,26 +88,22 @@ export default {
         id: "",
         codigo: "",
         nome: "",
-        categoria: "",
+        categoria: {},
         preco: "",
         quantidade: "",
-        fornecedor: "",
-        categoria: ""
+        fornecedor: {}
       },
       valid: true,
       masks,
-      money: {
-        decimal: ",",
-        thousands: ".",
-        prefix: "R$ ",
-        suffix: "",
-        precision: 2,
-        masked: false
-      }
+      snack: false,
+      fornecedores: [],
+      categorias: []
     };
   },
   mounted() {
     this.getProduto(this.id);
+    this.getFornecedores();
+    this.getCategorias();
   },
   methods: {
     addProduto(produto) {
@@ -121,14 +125,47 @@ export default {
       });
     },
 
+    changeSnack() {
+      this.$root.$emit("change-snack", this.snack);
+    },
+
+    getFornecedores() {
+      let url = "http://localhost:8080/Gestoque/fornecedor/fornecedores";
+      axios
+        .get(url)
+        .then(resp => {
+          this.fornecedores = resp.data;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    getCategorias() {
+      let url = "http://localhost:8080/Gestoque/categoria/categorias";
+      axios
+        .get(url)
+        .then(resp => {
+          this.categorias = resp.data;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
     clear() {
-      this.$refs.form.reset();
+      this.produto.nome = "";
+      this.produto.codigo = "";
+      this.produto.categoria = "";
+      this.produto.fornecedor = "";
+      this.produto.preco = "";
+      this.produto.quantidade = "";
       this.$validator.reset();
     },
     getProduto(id) {
       if (id) {
-        const produtos = JSON.parse(window.localStorage.getItem("produtos"));
-        const produtoResult = produtos.data.filter(item => item.id == id);
+        const produtos = this.$store.state.Produtos.produtos;
+        const produtoResult = produtos.filter(item => item.id == id);
         if (produtoResult && produtoResult.length > 0) {
           this.produto = produtoResult[0];
         }

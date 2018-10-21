@@ -15,25 +15,8 @@
       <v-data-table
       :headers="headers"
       :items="produtos"
-      :pagination.sync="pagination"
       :search="search"
-      select-all
-      item-key="id"
-      class="elevation-1 table-margin"
       >
-      <template slot="headers" slot-scope="props">
-        <tr>
-          <th
-            v-for="header in props.headers"
-            :key="header.text"
-            :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-            @click="changeSort(header.value)"
-          >
-            <v-icon small>arrow_upward</v-icon>
-            {{ header.text }}
-          </th>
-        </tr>
-      </template>
       <template slot="items" slot-scope="props">
         <tr>
           <td class="text-xs-center">{{ props.item.codigo }}</td>
@@ -70,7 +53,7 @@
 </template>
 
 <script>
-import jsonProdutos from "@/data/produtos.json";
+import { mapState, mapActions, mapGetters } from "vuex";
 import axios from "axios";
 
 export default {
@@ -85,64 +68,48 @@ export default {
         align: "center",
         value: "codigo"
       },
-      { text: "Nome", value: "nome" },
-      { text: "Categorias", value: "categorias" },
-      { text: "Preço", value: "preco" },
-      { text: "Quantidade ", value: "quantidade" },
-      { text: "Fornecedor", value: "fornecedor" },
-      { text: "Opções" }
-    ],
-    produtos: []
+      {
+        text: "Nome",
+        value: "nome",
+        align: "center"
+      },
+      {
+        text: "Categorias",
+        value: "categoria.nome",
+        align: "center"
+      },
+      {
+        text: "Preço",
+        value: "preco",
+        align: "center"
+      },
+      {
+        text: "Quantidade ",
+        value: "quantidade",
+        align: "center"
+      },
+      {
+        text: "Fornecedor",
+        value: "fornecedor.nome",
+        align: "center"
+      },
+      {
+        text: "Opções",
+        align: "center"
+      }
+    ]
   }),
 
-  mounted() {
-    this.getAll();
+  computed: {
+    ...mapState("Produtos", ["produtos"])
   },
+
+  mounted() {
+    this.setProdutos();
+  },
+
   methods: {
-    getAllProdutos() {
-      axios
-        .get("ge/produto/produtos")
-        .then(function(resp) {
-          this.produtos = resp.data;
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-    },
-
-    getAll() {
-      let url = "http://localhost:8080/Gestoque/produto/produtos";
-      let vm = this;
-      axios
-        .get(url)
-        .then(function(resp) {
-          vm.produtos = resp.data;
-          console.log(resp.data);
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-    },
-
-    toggleAll() {
-      if (this.selected.length) this.selected = [];
-      else this.selected = this.produtos.slice();
-    },
-    changeSort(column) {
-      if (this.pagination.sortBy === column) {
-        this.pagination.descending = !this.pagination.descending;
-      } else {
-        this.pagination.sortBy = column;
-        this.pagination.descending = false;
-      }
-    },
-    removerProdutos(index) {
-      this.produtos.splice(index, 1);
-      window.localStorage.setItem(
-        "produtos",
-        JSON.stringify({ data: this.produtos })
-      );
-    }
+    ...mapActions("Produtos", ["setProdutos", "deleteProduto"])
   }
 };
 </script>

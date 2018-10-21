@@ -15,26 +15,8 @@
     <v-data-table
     :headers="headers"
     :items="categorias"
-    :pagination.sync="pagination"
     :search="search"
-    v-model="search"
-    select-all
-    item-key="id"
-    class="elevation-1 table-margin"
   >
-    <template slot="headers" slot-scope="props">
-      <tr>
-        <th
-          v-for="header in props.headers"
-          :key="header.text"
-          :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-          @click="changeSort(header.value)"
-        >
-          <v-icon small>arrow_upward</v-icon>
-          {{ header.text }}
-        </th>
-      </tr>
-    </template>
     <template slot="items" slot-scope="props">
       <tr>
         <td class="text-xs-center">{{ props.item.nome }}</td>
@@ -46,7 +28,7 @@
             <span>Editar</span>
           </v-tooltip>
           <v-tooltip right>  
-            <v-btn flat icon color="red" slot="activator" @click="removerCategorias(props.index)">
+            <v-btn flat icon color="red" slot="activator" @click="deleteCategoria([props.item, props.item.id])">
               <v-icon>delete</v-icon>
             </v-btn>
             <span>Remover</span>
@@ -60,42 +42,37 @@
 </template>
 
 <script>
+import { mapState, mapActions, mapGetters } from "vuex";
+import axios from "axios";
+
 export default {
   data() {
     return {
       search: "",
-      pagination: {
-        sortBy: "name"
-      },
       headers: [
         {
           text: "Nome",
-          align: "center"
+          align: "center",
+          value: "nome"
         },
-        { text: "Outros" }
-      ],
-
-      categorias: []
+        {
+          text: "Outros",
+          align: "center"
+        }
+      ]
     };
   },
 
-  mounted() {},
+  computed: {
+    ...mapState("Categorias", ["categorias"])
+  },
+
+  mounted() {
+    this.setCategorias();
+  },
+
   methods: {
-    changeSort(column) {
-      if (this.pagination.sortBy === column) {
-        this.pagination.descending = !this.pagination.descending;
-      } else {
-        this.pagination.sortBy = column;
-        this.pagination.descending = false;
-      }
-    },
-    removerCategorias(index) {
-      this.categorias.splice(index, 1);
-      window.localStorage.setItem(
-        "categorias",
-        JSON.stringify({ data: this.categorias })
-      );
-    }
+    ...mapActions("Categorias", ["setCategorias", "deleteCategoria"])
   }
 };
 </script>

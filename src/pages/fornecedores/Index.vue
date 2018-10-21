@@ -18,25 +18,27 @@
       :search="search"
       > 
       <template slot="items" slot-scope="props">
-        <td class="text-xs-center">{{ props.item.nome }}</td>
-        <td class="text-xs-center">{{ props.item.email }}</td>
-        <td class="text-xs-center">{{ props.item.cnpj | cnpj }}</td>
-        <td class="text-xs-center">{{ props.item.telefone | phone }}</td>
-        <td class="text-xs-center">{{ props.item.uf }}</td>
-        <td class="text-xs-center">
-          <v-tooltip left>
-            <v-btn  flat icon color="primary" slot="activator" :to="`fornecedor/${props.item.id}`">
-              <v-icon>edit</v-icon>
-            </v-btn>
-            <span>Editar</span>
-          </v-tooltip>
-          <v-tooltip right>  
-            <v-btn flat icon color="red" slot="activator" @click="deleteFornecedor([props.item, props.item.id])">
-              <v-icon>delete</v-icon>
-            </v-btn>
-            <span>Remover</span>
-          </v-tooltip>
-        </td>
+        <tr>
+          <td class="text-xs-center">{{ props.item.nome }}</td>
+          <td class="text-xs-center">{{ props.item.email }}</td>
+          <td class="text-xs-center">{{ props.item.cnpj | cnpj }}</td>
+          <td class="text-xs-center">{{ props.item.telefone | phone }}</td>
+          <td class="text-xs-center">{{ props.item.uf }}</td>
+          <td class="text-xs-center">
+            <v-tooltip left>
+              <v-btn  flat icon color="primary" slot="activator" :to="`fornecedor/${props.item.id}`">
+                <v-icon>edit</v-icon>
+              </v-btn>
+              <span>Editar</span>
+            </v-tooltip>
+            <v-tooltip right>  
+              <v-btn flat icon color="red" slot="activator" @click="deleteFornecedor([props.item, props.item.id])">
+                <v-icon>delete</v-icon>
+              </v-btn>
+              <span>Remover</span>
+            </v-tooltip>
+          </td>
+        </tr>
       </template>
       </v-data-table>
     </v-card>
@@ -44,17 +46,12 @@
 </template>
 
 <script>
-import jsonFornecedores from "@/data/fornecedores.json";
 import { mapState, mapActions, mapGetters } from "vuex";
 import axios from "axios";
 
 export default {
   data: () => ({
     search: "",
-    dialog: false,
-    pagination: {
-      sortBy: "name"
-    },
     headers: [
       {
         text: "Nome",

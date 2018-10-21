@@ -118,9 +118,7 @@
 <script>
 import masks from "@/utils/masks/masks";
 import axios from "axios";
-import jsonp from "jsonp";
 import Alerta from "@/components/Alerta";
-import { EventBus } from "@/data/event-bus.js";
 export default {
   components: {
     Alerta
@@ -152,7 +150,6 @@ export default {
         email: "",
         cnpj: ""
       },
-      items: ["Fornecedor1", "Fornecedor2"],
       valid: true,
       masks,
       snack: true
@@ -166,7 +163,7 @@ export default {
     buscarFornecedor(cnpj) {
       const url = `https://www.receitaws.com.br/v1/cnpj/${cnpj}`;
       axios
-        .get(url)
+        .get("https://cors-anywhere.herokuapp.com/" + url)
         .then(resp => {
           this.fornecedor = resp.data;
         })

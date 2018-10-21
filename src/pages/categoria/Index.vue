@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-flex xs12 sm8>
-      <form ref="form" @submit.prevent="submit">
+      <form ref="form">
         <v-text-field
           label="Nome"
           v-model="categoria.nome"
@@ -10,16 +10,23 @@
           v-validate="'required|max:50'"
         />
 
-        <v-btn type="submit" @click="submit()">Enviar</v-btn>
+        <v-btn v-if="$route.name === 'Categoria' " @click="addCategoria(categoria)">Enviar</v-btn>
+        <v-btn v-else @click="updateCategoria(categoria.id, categoria)">Enviar E</v-btn>
         <v-btn @click="clear">Limpar</v-btn>
+        <alerta :snack="snack"></alerta>
       </form>
     </v-flex>  
   </v-container>
 </template>
 
 <script>
-import masks from "@/utils/masks/masks";
+import axios from "axios";
+import Alerta from "@/components/Alerta";
 export default {
+  components: {
+    Alerta
+  },
+
   $_veeValidate: {
     validator: "new"
   },
@@ -35,9 +42,8 @@ export default {
         id: "",
         nome: ""
       },
-
       valid: true,
-      masks
+      snack: true
     };
   },
 
@@ -46,55 +52,63 @@ export default {
   },
 
   methods: {
-    submit() {
+    addCategoria(categoria) {
+      const url = "http://localhost:8080/Gestoque/categoria/new";
       this.$validator.validateAll().then(valid => {
         if (valid) {
-          if (this.categoria.id) {
-            this.removerCategorias(this.categoria.id);
-          }
-          let jsonCategorias = JSON.parse(
-            window.localStorage.getItem("categorias")
-          );
-
-          jsonCategorias.data.push(this.categoria);
-          window.localStorage.setItem(
-            "categorias",
-            JSON.stringify(jsonCategorias)
-          );
-          this.$router.push("/categorias");
+          axios
+            .post(url, categoria)
+            .then(resp => {
+              if (resp.status === 200) {
+                this.changeSnack();
+                this.clear();
+                setTimeout(function() {
+                  this.snack = false;
+                }, 5000);
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
         }
       });
     },
-    removerCategorias(id) {
-      var index = null;
-      let jsonCategorias = JSON.parse(
-        window.localStorage.getItem("categorias")
-      );
-      jsonCategorias.data.forEach((item, i) => {
-        if (item.id == id) index = i;
+
+    updateCategoria(id, categoria) {
+      const url = `http://localhost:8080/Gestoque/categoria/update/${id}`;
+      this.$validator.validateAll().then(valid => {
+        if (valid) {
+          axios
+            .put(url, categoria)
+            .then(resp => {
+              if (resp.status === 204) {
+                this.$router.push("/categorias");
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }
       });
-      if (index > -1) {
-        jsonCategorias.data.splice(index, 1);
-        window.localStorage.setItem(
-          "categorias",
-          JSON.stringify(jsonCategorias)
-        );
-      }
     },
-    clear() {
-      this.$refs.form.reset();
-      this.$validator.reset();
-    },
+
     getCategoria(id) {
       if (id) {
-        const categorias = JSON.parse(
-          window.localStorage.getItem("categorias")
-        );
-        const categoriaResult = categorias.data.filter(item => item.id == id);
+        const categorias = this.$store.state.Categorias.categorias;
+        const categoriaResult = categorias.filter(item => item.id == id);
         if (categoriaResult && categoriaResult.length > 0) {
           this.categoria = categoriaResult[0];
         }
       }
+    },
+
+    changeSnack() {
+      this.$root.$emit("change-snack", this.snack);
+    },
+
+    clear() {
+      this.categoria.nome = "";
+      this.$validator.reset();
     }
   }
 };
