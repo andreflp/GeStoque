@@ -6,20 +6,19 @@ const setProdutos = async ({ commit }) => {
   commit('SET_PRODUTOS', { produtos });
 }
 
-const deleteProdutos = ({ commit, state }, [item, id]) => {
-  const index = state.produtos.indexOf(item);
+const deleteProduto = ({ commit, state }, [item, id]) => {
   let produtos = state.produtos;
+  const index = produtos.indexOf(item);
   let url = `http://localhost:8080/Gestoque/produto/delete/${id}`;
-  return axios.delete(url).then(resp => {
+  axios.delete(url).then(resp => {
     if (resp.status === 200) {
       produtos.splice(index, 1);
-      commit("SET_CATEGORIAS", { produtos })
+      commit("SET_PRODUTOS", { produtos })
     }
-
   })
 }
 
 export default {
   setProdutos,
-  deleteProdutos
+  deleteProduto
 }

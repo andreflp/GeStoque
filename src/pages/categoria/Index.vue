@@ -11,9 +11,10 @@
         />
 
         <v-btn v-if="$route.name === 'Categoria' " @click="addCategoria(categoria)">Enviar</v-btn>
-        <v-btn v-else @click="updateCategoria(categoria.id, categoria)">Enviar E</v-btn>
+        <v-btn v-else @click="updateCategoria(categoria.id, categoria)">Editar</v-btn>
         <v-btn @click="clear">Limpar</v-btn>
         <alerta :snack="snack"></alerta>
+        
       </form>
     </v-flex>  
   </v-container>
@@ -42,6 +43,7 @@ export default {
         id: "",
         nome: ""
       },
+      dialog: true,
       valid: true,
       snack: true
     };

@@ -8,7 +8,7 @@
             v-model="fornecedor.nome"
             data-vv-name="nome"
             :error-messages="errors.collect('nome')"
-            v-validate="'required|max:50'"
+            v-validate="'required|max:100'"
           />
         </v-flex>  
 
@@ -106,9 +106,10 @@
 
         <v-flex xs12 sm6 md8>
           <v-btn v-if="$route.name === 'Fornecedor'" @click="addFornecedor(fornecedor)">Enviar</v-btn>
-          <v-btn v-else @click="updateFornecedor(fornecedor.id, fornecedor)">Enviar</v-btn>
+          <v-btn v-else @click="updateFornecedor(fornecedor.id, fornecedor)">Editar</v-btn>
           <v-btn @click="clear">Limpar</v-btn>
         </v-flex>  
+        
         <alerta :snack="snack"></alerta>
       </v-layout>
     </v-container>
@@ -163,7 +164,7 @@ export default {
     buscarFornecedor(cnpj) {
       const url = `https://www.receitaws.com.br/v1/cnpj/${cnpj}`;
       axios
-        .get("https://cors-anywhere.herokuapp.com/" + url)
+        .get(url)
         .then(resp => {
           this.fornecedor = resp.data;
         })
@@ -186,9 +187,6 @@ export default {
               if (resp.status === 200) {
                 this.changeSnack();
                 this.clear();
-                setTimeout(function() {
-                  this.snack = false;
-                }, 5000);
               }
             })
             .catch(error => {

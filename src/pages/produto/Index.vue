@@ -45,6 +45,7 @@
         <v-text-field
           label="Preço"
           v-model.lazy="produto.preco"
+          v-money="money"
           data-vv-name="preço"
           :error-messages="errors.collect('preço')"
           v-validate="'required'"
@@ -59,20 +60,25 @@
         />
       
       </v-flex>  
-      <v-btn @click="addProduto(produto)">Enviar</v-btn>
+      <alerta :snack="snack"></alerta>
+      <v-btn v-if="$route.name === 'Produto'" @click="addProduto(produto)">Enviar</v-btn>
+      <v-btn v-else @click="updateProduto(produto.id, produto)">Editar</v-btn>
       <v-btn @click="clear">Limpar</v-btn>
+      
     </form>
   </v-container>
 </template>
 
 <script>
-import { Money } from "v-money";
 import masks from "@/utils/masks/masks";
 import axios from "axios";
 import Alerta from "@/components/Alerta";
+import { Money } from "v-money";
 export default {
-  components: { Money, Alerta },
-
+  components: {
+    Alerta,
+    Money
+  },
   $_veeValidate: {
     validator: "new"
   },
@@ -93,9 +99,15 @@ export default {
         quantidade: "",
         fornecedor: {}
       },
-      valid: true,
+      money: {
+        decimal: ",",
+        thousands: ".",
+        prefix: "R$ ",
+        precision: 2,
+        masked: false
+      },
       masks,
-      snack: false,
+      snack: true,
       fornecedores: [],
       categorias: []
     };
@@ -105,16 +117,33 @@ export default {
     this.getFornecedores();
     this.getCategorias();
   },
+
   methods: {
+    changeSnack() {
+      this.$root.$emit("change-snack", this.snack);
+    },
+
+    replacePreco(produto) {
+      produto.preco = this.produto.preco
+        .replace("R$", "")
+        .replace(".", "")
+        .replace(",", ".");
+    },
+
     addProduto(produto) {
+      this.replacePreco(produto);
       const url = "http://localhost:8080/Gestoque/produto/new";
       this.$validator.validateAll().then(valid => {
         if (valid) {
+          produto.preco = this.produto.preco
+            .replace("R$", "")
+            .replace(",", ".");
+          console.log(this.produto.preco);
           axios
             .post(url, produto)
             .then(resp => {
               if (resp.status === 200) {
-                this.snackbar = true;
+                this.changeSnack();
                 this.clear();
               }
             })
@@ -125,8 +154,22 @@ export default {
       });
     },
 
-    changeSnack() {
-      this.$root.$emit("change-snack", this.snack);
+    updateProduto(id, produto) {
+      const url = `http://localhost:8080/Gestoque/produto/update/${id}`;
+      this.$validator.validateAll().then(valid => {
+        if (valid) {
+          axios
+            .put(url, produto)
+            .then(resp => {
+              if (resp.status === 204) {
+                this.$router.push("/produtos");
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }
+      });
     },
 
     getFornecedores() {
@@ -162,6 +205,7 @@ export default {
       this.produto.quantidade = "";
       this.$validator.reset();
     },
+
     getProduto(id) {
       if (id) {
         const produtos = this.$store.state.Produtos.produtos;

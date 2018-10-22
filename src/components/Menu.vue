@@ -102,7 +102,7 @@ export default {
         { title: "Produto", icon: "inbox", route: "/produto" },
         { title: "Categoria", icon: "dns", route: "/categoria" }
       ],
-
+      images: "../assets/oie_transparent (10).png",
       modal: false,
       drawer: false
     };
@@ -115,3 +115,6 @@ export default {
   }
 };
 </script>
+<style>
+</style>
+
