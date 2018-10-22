@@ -26,7 +26,6 @@
         <td class="text-xs-center">{{ props.item.quantidade }}</td>
         <td class="text-xs-center">{{ props.item.fornecedor.nome }}</td>
         <td class="text-xs-center">
-          
           <v-dialog v-model="dialog" lazy absolute max-width="320">
             <v-card>
               <v-card-title class="headline">Confirmação</v-card-title>
@@ -38,7 +37,6 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-
           <v-tooltip left>
             <v-btn  flat icon color="primary" slot="activator" :to="`produto/${props.item.id}`">
               <v-icon>edit</v-icon>

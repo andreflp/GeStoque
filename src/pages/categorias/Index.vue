@@ -46,7 +46,6 @@
           </v-tooltip>
         </td>
       </tr>
-      
     </template>
   </v-data-table>
   </v-card>

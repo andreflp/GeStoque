@@ -86,7 +86,6 @@ export default {
   mounted() {
     this.setFornecedores();
   },
-
   methods: {
     ...mapActions("Fornecedores", ["setFornecedores", "deleteFornecedor"]),
 
