@@ -14,7 +14,16 @@
         <v-btn v-else @click="updateCategoria(categoria.id, categoria)">Editar</v-btn>
         <v-btn @click="clear">Limpar</v-btn>
         <alerta :snack="snack"></alerta>
-        
+        <v-dialog v-model="dialog" persistent max-width="290">
+          <v-card>
+            <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
+            <v-card-text>Categoria já cadastrada.</v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </form>
     </v-flex>  
   </v-container>
@@ -43,8 +52,7 @@ export default {
         id: "",
         nome: ""
       },
-      dialog: true,
-      valid: true,
+      dialog: false,
       snack: true
     };
   },
@@ -55,18 +63,18 @@ export default {
 
   methods: {
     addCategoria(categoria) {
+      const nome = this.categoria.nome;
       const url = "http://localhost:8080/Gestoque/categoria/new";
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
-            .post(url, categoria)
+            .post(url, categoria, { params: { nome: nome } })
             .then(resp => {
-              if (resp.status === 200) {
+              if (resp.data === true) {
+                this.dialog = true;
+              } else if (resp.data === false) {
                 this.changeSnack();
                 this.clear();
-                setTimeout(function() {
-                  this.snack = false;
-                }, 5000);
               }
             })
             .catch(error => {
@@ -77,13 +85,16 @@ export default {
     },
 
     updateCategoria(id, categoria) {
+      const nome = this.categoria.nome;
       const url = `http://localhost:8080/Gestoque/categoria/update/${id}`;
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
-            .put(url, categoria)
+            .put(url, categoria, { params: { nome: nome } })
             .then(resp => {
-              if (resp.status === 204) {
+              if (resp.data === true) {
+                this.dialog = true;
+              } else if (resp.data === false) {
                 this.$router.push("/categorias");
               }
             })

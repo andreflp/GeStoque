@@ -21,7 +21,7 @@
         <v-autocomplete
           label="Fornecedores"
           v-model="produto.fornecedor"
-          :items="fornecedores"
+          :items="list"
           item-text="nome"
           item-value="id"
           data-vv-name="fornecedor"
@@ -36,35 +36,56 @@
           :items="categorias"
           item-text="nome"
           item-value="id"
-          return-object
           data-vv-name="categoria"
           :error-messages="errors.collect('categoria')"
           v-validate="'required'"
+          return-object
         ></v-autocomplete>
 
         <v-text-field
           label="Preço"
+          ref="preco"
           v-model.lazy="produto.preco"
           v-money="money"
           data-vv-name="preço"
           :error-messages="errors.collect('preço')"
           v-validate="'required'"
-        ></v-text-field>
-        
+        />
+       
         <v-text-field
           label="Quantidade"
           v-model="produto.quantidade"
           data-vv-name="quantidade"
+          v-if="$route.name === 'Produto'"
           :error-messages="errors.collect('quantidade')"
           v-validate="'required'"
         />
-      
-      </v-flex>  
+      </v-flex>
+        
       <alerta :snack="snack"></alerta>
       <v-btn v-if="$route.name === 'Produto'" @click="addProduto(produto)">Enviar</v-btn>
       <v-btn v-else @click="updateProduto(produto.id, produto)">Editar</v-btn>
-      <v-btn @click="clear">Limpar</v-btn>
-      
+      <v-btn @click="clear()">Limpar</v-btn>
+      <v-dialog v-model="dialog" persistent max-width="290">
+        <v-card>
+          <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
+          <v-card-text>Produto/código já cadastrado.</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialog2" persistent max-width="290">
+        <v-card>
+          <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
+          <v-card-text>{{msg}}</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" flat @click.native="dialog2 = false">Fechar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </form>
   </v-container>
 </template>
@@ -72,12 +93,12 @@
 <script>
 import masks from "@/utils/masks/masks";
 import axios from "axios";
+import { mapState, mapActions, mapGetters } from "vuex";
 import Alerta from "@/components/Alerta";
-import { Money } from "v-money";
+import { VMoney } from "v-money";
 export default {
   components: {
-    Alerta,
-    Money
+    Alerta
   },
   $_veeValidate: {
     validator: "new"
@@ -94,31 +115,47 @@ export default {
         id: "",
         codigo: "",
         nome: "",
-        categoria: {},
-        preco: "",
+        categoria: "",
+        preco: 0,
         quantidade: "",
-        fornecedor: {}
+        fornecedor: ""
       },
       money: {
         decimal: ",",
         thousands: ".",
-        prefix: "R$ ",
         precision: 2,
         masked: false
       },
       masks,
       snack: true,
-      fornecedores: [],
-      categorias: []
+      dialog: false,
+      dialog2: false,
+      msg: ""
     };
   },
+
+  directives: { money: VMoney },
+
+  created() {
+    this.setFornecedores();
+    this.setCategorias();
+  },
+
   mounted() {
     this.getProduto(this.id);
-    this.getFornecedores();
-    this.getCategorias();
+  },
+
+  computed: {
+    ...mapState("Categorias", ["categorias"]),
+    ...mapState("Fornecedores", ["list"]),
+    ...mapState("Produtos", ["produtos"])
   },
 
   methods: {
+    ...mapActions("Categorias", ["setCategorias"]),
+    ...mapActions("Produtos", ["setProdutos"]),
+    ...mapActions("Fornecedores", ["setFornecedores"]),
+
     changeSnack() {
       this.$root.$emit("change-snack", this.snack);
     },
@@ -130,19 +167,63 @@ export default {
         .replace(",", ".");
     },
 
+    searchAndSave(produto) {
+      const categoriaResult = this.categorias.filter(
+        item => item.id == produto.categoria.id
+      );
+      const fornecedorResult = this.list.filter(
+        item => item.id == produto.fornecedor.id
+      );
+
+      if (
+        categoriaResult &&
+        categoriaResult.length > 0 &&
+        (fornecedorResult && fornecedorResult.length > 0)
+      ) {
+        this.addProduto(produto);
+      } else {
+        if (!(categoriaResult && categoriaResult.length > 0)) {
+          this.msg = "Categoria não encontrada.";
+          this.dialog2 = true;
+        } else if (!(fornecedorResult && fornecedorResult.length > 0)) {
+          this.msg = "Fornecedor não encontrado.";
+          this.dialog2 = true;
+        }
+      }
+    },
+
+    searchCategoria(categoria) {
+      const categoriaResult = this.categorias.filter(item => item == categoria);
+      if (categoriaResult && categoriaResult.length > 0) {
+        this.addProduto(produto);
+      } else {
+        this.msg = "Categoria não encontrada.";
+        this.dialog2 = true;
+      }
+    },
+
+    searchFornecedor(fornecedor) {
+      const fornecedorResult = this.list.filter(item => item == fornecedor);
+      if (fornecedorResult && fornecedorResult.length > 0) {
+        this.addProduto(produto);
+      } else {
+        this.msg = "Fornecedor não encontrado.";
+        this.dialog2 = true;
+      }
+    },
+
     addProduto(produto) {
       this.replacePreco(produto);
+      const codigo = this.produto.codigo;
       const url = "http://localhost:8080/Gestoque/produto/new";
       this.$validator.validateAll().then(valid => {
         if (valid) {
-          produto.preco = this.produto.preco
-            .replace("R$", "")
-            .replace(",", ".");
-          console.log(this.produto.preco);
           axios
-            .post(url, produto)
+            .post(url, produto, { params: { codigo: codigo } })
             .then(resp => {
-              if (resp.status === 200) {
+              if (resp.data === true) {
+                this.dialog = true;
+              } else if (resp.data === false) {
                 this.changeSnack();
                 this.clear();
               }
@@ -155,13 +236,17 @@ export default {
     },
 
     updateProduto(id, produto) {
+      this.replacePreco(produto);
+      const codigo = this.produto.codigo;
       const url = `http://localhost:8080/Gestoque/produto/update/${id}`;
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
-            .put(url, produto)
+            .put(url, produto, { params: { codigo: codigo } })
             .then(resp => {
-              if (resp.status === 204) {
+              if (resp.data === true) {
+                this.dialog = true;
+              } else if (resp.data === false) {
                 this.$router.push("/produtos");
               }
             })
@@ -172,35 +257,12 @@ export default {
       });
     },
 
-    getFornecedores() {
-      let url = "http://localhost:8080/Gestoque/fornecedor/fornecedores";
-      axios
-        .get(url)
-        .then(resp => {
-          this.fornecedores = resp.data;
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-
-    getCategorias() {
-      let url = "http://localhost:8080/Gestoque/categoria/categorias";
-      axios
-        .get(url)
-        .then(resp => {
-          this.categorias = resp.data;
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-
     clear() {
       this.produto.nome = "";
       this.produto.codigo = "";
       this.produto.categoria = "";
       this.produto.fornecedor = "";
+      this.$refs.preco.$el.getElementsByTagName("input")[0].value = 0;
       this.produto.preco = "";
       this.produto.quantidade = "";
       this.$validator.reset();
@@ -208,7 +270,7 @@ export default {
 
     getProduto(id) {
       if (id) {
-        const produtos = this.$store.state.Produtos.produtos;
+        const produtos = this.produtos;
         const produtoResult = produtos.filter(item => item.id == id);
         if (produtoResult && produtoResult.length > 0) {
           this.produto = produtoResult[0];

@@ -6,6 +6,7 @@ import VeeValidate, { Validator } from "vee-validate";
 import VueCurrencyFilter from 'vue-currency-filter'
 import VueI18n from 'vue-i18n'
 import Animate from 'animate.css'
+import VuetifyConfirm from 'vuetify-confirm'
 import pt_BR from "vee-validate/dist/locale/pt_BR";
 import filters from "./filters/filter";
 import money from 'v-money'
@@ -17,6 +18,7 @@ import 'animate.css'
 Vue.config.productionTip = false
 
 Vue.use(Animate);
+Vue.use(VuetifyConfirm);
 Vue.use(VeeValidate);
 Vue.use(money, { precision: 4 });
 filters.create(Vue);

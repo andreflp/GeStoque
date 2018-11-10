@@ -12,13 +12,24 @@
           />
         </v-flex>  
 
-        <v-flex xs12 sm6 md8>
+        <v-flex xs12 sm6 md8 v-if="$route.name === 'Fornecedor'">
           <v-text-field
             label="CNPJ"
             v-model="fornecedor.cnpj"
             :mask="masks.cnpj"
             data-vv-name="cnpj"
             @change="buscarFornecedor(fornecedor.cnpj)"
+            :error-messages="errors.collect('cnpj')"
+            v-validate="'required'"
+          />
+        </v-flex>
+
+        <v-flex xs12 sm6 md8 v-else>
+          <v-text-field
+            label="CNPJ"
+            v-model="fornecedor.cnpj"
+            :mask="masks.cnpj"
+            data-vv-name="cnpj"
             :error-messages="errors.collect('cnpj')"
             v-validate="'required'"
           />
@@ -38,6 +49,7 @@
           <v-text-field
             label="CEP"
             v-model="fornecedor.cep"
+            :mask="masks.cep"
             data-vv-name="cep"
             :error-messages="errors.collect('cep')"
             v-validate="'required'"
@@ -108,7 +120,17 @@
           <v-btn v-if="$route.name === 'Fornecedor'" @click="addFornecedor(fornecedor)">Enviar</v-btn>
           <v-btn v-else @click="updateFornecedor(fornecedor.id, fornecedor)">Editar</v-btn>
           <v-btn @click="clear">Limpar</v-btn>
-        </v-flex>  
+        </v-flex>
+        <v-dialog v-model="dialog" persistent max-width="290">
+          <v-card>
+            <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
+            <v-card-text>Fornecedor/CNPJ já cadastrado.</v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>  
         
         <alerta :snack="snack"></alerta>
       </v-layout>
@@ -151,7 +173,7 @@ export default {
         email: "",
         cnpj: ""
       },
-      valid: true,
+      dialog: false,
       masks,
       snack: true
     };
@@ -178,13 +200,16 @@ export default {
     },
 
     addFornecedor(fornecedor) {
+      const cnpj = this.fornecedor.cnpj;
       const url = "http://localhost:8080/Gestoque/fornecedor/new";
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
-            .post(url, fornecedor)
+            .post(url, fornecedor, { params: { cnpj: cnpj } })
             .then(resp => {
-              if (resp.status === 200) {
+              if (resp.data === true) {
+                this.dialog = true;
+              } else if (resp.data === false) {
                 this.changeSnack();
                 this.clear();
               }
@@ -197,13 +222,16 @@ export default {
     },
 
     updateFornecedor(id, fornecedor) {
+      const cnpj = this.fornecedor.cnpj;
       const url = `http://localhost:8080/Gestoque/fornecedor/${id}`;
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
-            .put(url, fornecedor)
+            .put(url, fornecedor, { params: { cnpj: cnpj } })
             .then(resp => {
-              if (resp.status === 204) {
+              if (resp.data === true) {
+                this.dialog = true;
+              } else if (resp.data === false) {
                 this.$router.push("/fornecedores");
               }
             })
