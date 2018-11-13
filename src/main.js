@@ -5,8 +5,10 @@ import Vuetify from 'vuetify'
 import VeeValidate, { Validator } from "vee-validate";
 import VueCurrencyFilter from 'vue-currency-filter'
 import VueI18n from 'vue-i18n'
+import VueChart from 'vue-chart-js'
 import Animate from 'animate.css'
 import VuetifyConfirm from 'vuetify-confirm'
+import VueAnimateNumber from 'vue-animate-number'
 import pt_BR from "vee-validate/dist/locale/pt_BR";
 import filters from "./filters/filter";
 import money from 'v-money'
@@ -17,6 +19,8 @@ import 'animate.css'
 
 Vue.config.productionTip = false
 
+Vue.use(VueChart);
+Vue.use(VueAnimateNumber);
 Vue.use(Animate);
 Vue.use(VuetifyConfirm);
 Vue.use(VeeValidate);
