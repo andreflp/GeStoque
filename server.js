@@ -1,8 +1,8 @@
-const express = require('express');
+import express, { static } from 'express';
 const port = process.env.PORT;
 const app = express();
 
-app.use(express.static(__dirname + "/dist/"));
+app.use(static(__dirname + "/dist/"));
 app.get(/.*/, function (req, res) {
   res.sendfile(__dirname + "/dist/index.html")
 });
