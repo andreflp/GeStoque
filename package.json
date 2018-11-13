@@ -2,7 +2,6 @@
   "name": "projeto-usj",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "main": "server.js",
   "author": "André",
   "private": true,
   "scripts": {
