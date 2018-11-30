@@ -1,93 +1,96 @@
 <template>
-  <v-container>
-    <form ref="form" @submit.prevent="addProduto">
-      <v-flex xs12 sm8>
-        <v-text-field
-          label="Nome"
-          v-model="produto.nome"
-          data-vv-name="nome"
-          :error-messages="errors.collect('nome')"
-          v-validate="'required|max:50'"
-        />
+  <v-container fluid>
+    <v-container>
+      <form ref="form" @submit.prevent="addProduto">
+        <v-flex xs12 sm8>
+          <v-text-field
+            label="Nome"
+            v-model="produto.nome"
+            data-vv-name="nome"
+            :error-messages="errors.collect('nome')"
+            v-validate="'required|max:50'"
+          />
 
-        <v-text-field
-          label="Código"
-          v-model="produto.codigo"
-          data-vv-name="código"
-          :error-messages="errors.collect('código')"
-          v-validate="'required'"
-        />
+          <v-text-field
+            label="Código"
+            v-model="produto.codigo"
+            data-vv-name="código"
+            :error-messages="errors.collect('código')"
+            v-validate="'required'"
+          />
 
-        <v-autocomplete
-          label="Fornecedores"
-          v-model="produto.fornecedor"
-          :items="list"
-          item-text="nome"
-          item-value="id"
-          data-vv-name="fornecedor"
-          :error-messages="errors.collect('fornecedor')"
-          v-validate="'required'"
-          return-object
-        ></v-autocomplete>
+          <v-autocomplete
+            label="Fornecedores"
+            v-model="produto.fornecedor"
+            :items="list"
+            item-text="nome"
+            item-value="id"
+            data-vv-name="fornecedor"
+            :error-messages="errors.collect('fornecedor')"
+            v-validate="'required'"
+            return-object
+          ></v-autocomplete>
 
-        <v-autocomplete
-          label="Categoria"
-          v-model="produto.categoria"
-          :items="categorias"
-          item-text="nome"
-          item-value="id"
-          data-vv-name="categoria"
-          :error-messages="errors.collect('categoria')"
-          v-validate="'required'"
-          return-object
-        ></v-autocomplete>
+          <v-autocomplete
+            label="Categoria"
+            v-model="produto.categoria"
+            :items="categorias"
+            item-text="nome"
+            item-value="id"
+            data-vv-name="categoria"
+            :error-messages="errors.collect('categoria')"
+            v-validate="'required'"
+            return-object
+          ></v-autocomplete>
 
-        <v-text-field
-          label="Preço"
-          ref="preco"
-          v-model.lazy="produto.preco"
-          v-money="money"
-          data-vv-name="preço"
-          :error-messages="errors.collect('preço')"
-          v-validate="'required'"
-        />
-       
-        <v-text-field
-          label="Quantidade"
-          v-model="produto.quantidade"
-          data-vv-name="quantidade"
-          v-if="$route.name === 'Produto'"
-          :error-messages="errors.collect('quantidade')"
-          v-validate="'required'"
-        />
-      </v-flex>
+          <v-text-field
+            label="Preço"
+            ref="preco"
+            v-model.lazy="produto.preco"
+            v-money="money"
+            data-vv-name="preço"
+            :error-messages="errors.collect('preço')"
+            v-validate="'required'"
+          />
         
-      <alerta :snack="snack"></alerta>
-      <v-btn v-if="$route.name === 'Produto'" @click="addProduto(produto)">Enviar</v-btn>
-      <v-btn v-else @click="updateProduto(produto.id, produto)">Editar</v-btn>
-      <v-btn @click="clear()">Limpar</v-btn>
-      <v-dialog v-model="dialog" persistent max-width="290">
-        <v-card>
-          <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
-          <v-card-text>Produto/código já cadastrado.</v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-dialog v-model="dialog2" persistent max-width="290">
-        <v-card>
-          <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
-          <v-card-text>{{msg}}</v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" flat @click.native="dialog2 = false">Fechar</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </form>
+          <v-text-field
+            label="Quantidade"
+            v-model="produto.quantidade"
+            data-vv-name="quantidade"
+            v-if="$route.name === 'Produto'"
+            :error-messages="errors.collect('quantidade')"
+            v-validate="'required'"
+          />
+        </v-flex>
+          
+        <alerta :snack="snack"></alerta>
+        <v-btn v-if="$route.name === 'Produto'" @click="addProduto(produto)">Enviar</v-btn>
+        <v-btn v-else @click="updateProduto(produto.id, produto)">Editar</v-btn>
+        <v-btn @click="clear()">Limpar</v-btn>
+        <v-dialog v-model="dialog" persistent max-width="290">
+          <v-card>
+            <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
+            <v-card-text>Produto/código já cadastrado.</v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialog2" persistent max-width="290">
+          <v-card>
+            <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
+            <v-card-text>{{msg}}</v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" flat @click.native="dialog2 = false">Fechar</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </form>
+    </v-container>
   </v-container>
+
 </template>
 
 <script>
@@ -219,7 +222,10 @@ export default {
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
-            .post(url, produto, { params: { codigo: codigo } })
+            .post(url, produto, {
+              params: { codigo: codigo },
+              headers: { Authorization: `${token}` }
+            })
             .then(resp => {
               if (resp.data === true) {
                 this.dialog = true;
@@ -242,7 +248,10 @@ export default {
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
-            .put(url, produto, { params: { codigo: codigo } })
+            .put(url, produto, {
+              params: { codigo: codigo },
+              headers: { Authorization: `${token}` }
+            })
             .then(resp => {
               if (resp.data === true) {
                 this.dialog = true;

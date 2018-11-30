@@ -9,7 +9,7 @@ import Categoria from '@/pages/categoria/Index'
 import Movimentacoes from '@/pages/Movimentacoes'
 import Relatorios from '@/pages/Relatorios'
 import Categorias from '@/pages/categorias/Index'
-
+import Login from '@/pages/login/Login'
 
 Vue.use(Router)
 
@@ -17,9 +17,14 @@ export default new Router({
   mode: "history",
   routes: [
     {
+      path: '*',
+      redirect: '/'
+    },
+
+    {
       path: '/',
       name: 'Dashboard',
-      component: Dashboard
+      component: Dashboard,
     },
 
     {
@@ -98,6 +103,11 @@ export default new Router({
       props: true
     },
 
-
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login,
+    },
   ]
-})
+});
+

@@ -1,60 +1,62 @@
 <template>
   <v-container>
-    <v-flex xs12 sm8>
-      <form ref="form" @submit.prevent="submit">
-        <v-combobox
-          label="Produto"
-          v-model="movimentacao.produto"
-          :items="produtos"
-          item-text="nome"
-          item-value="id"
-          data-vv-name="produto"
-          :error-messages="errors.collect('produto')"
-          v-validate="'required'"
-        ></v-combobox>
+    <v-container>
+      <v-flex xs12 sm8>
+        <form ref="form" @submit.prevent="submit">
+          <v-combobox
+            label="Produto"
+            v-model="movimentacao.produto"
+            :items="produtos"
+            item-text="nome"
+            item-value="id"
+            data-vv-name="produto"
+            :error-messages="errors.collect('produto')"
+            v-validate="'required'"
+          ></v-combobox>
 
-        <v-select
-          label="Tipo"
-          v-model="movimentacao.tipo"
-          item-text="nome"
-          item-value="value"
-          data-vv-name="tipo"
-          :items="tipos"
-          :error-messages="errors.collect('tipo')"
-          v-validate="'required'"
-        ></v-select>
+          <v-select
+            label="Tipo"
+            v-model="movimentacao.tipo"
+            item-text="nome"
+            item-value="value"
+            data-vv-name="tipo"
+            :items="tipos"
+            :error-messages="errors.collect('tipo')"
+            v-validate="'required'"
+          ></v-select>
 
-        <v-text-field
-          label="Quantidade"
-          v-model="movimentacao.quantidade"
-          data-vv-name="quantidade"
-          :error-messages="errors.collect('quantidade')"
-          v-validate="'required|numeric'"
-        />
-        <v-btn @click="searchAndSave(movimentacao);">Enviar</v-btn>
-        <v-btn>Limpar</v-btn>
-        <v-dialog v-model="dialog" persistent max-width="290">
-          <v-card>
-            <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
-            <v-card-text>Quantidade maior que a do produto.</v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialog2" persistent max-width="290">
-          <v-card>
-            <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
-            <v-card-text>Produto não encontrado.</v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" flat @click.native="dialog2 = false">Fechar</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </form>
-    </v-flex>
+          <v-text-field
+            label="Quantidade"
+            v-model="movimentacao.quantidade"
+            data-vv-name="quantidade"
+            :error-messages="errors.collect('quantidade')"
+            v-validate="'required|numeric'"
+          />
+          <v-btn @click="searchAndSave(movimentacao);">Enviar</v-btn>
+          <v-btn>Limpar</v-btn>
+          <v-dialog v-model="dialog" persistent max-width="290">
+            <v-card>
+              <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
+              <v-card-text>Quantidade maior que a do produto.</v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <v-dialog v-model="dialog2" persistent max-width="290">
+            <v-card>
+              <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
+              <v-card-text>Produto não encontrado.</v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" flat @click.native="dialog2 = false">Fechar</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </form>
+      </v-flex>
+    </v-container>  
   </v-container>    
 </template>
 

@@ -4,11 +4,25 @@
     <v-toolbar-title>{{$route.name}}</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
+      <v-tooltip left>
+        <v-btn 
+          @click="logout()"
+          icon
+          slot="activator"
+          dark>
+          <v-icon>exit_to_app</v-icon>
+        </v-btn>
+        Logout
+      </v-tooltip>
+
+      
     </v-toolbar-items>
   </v-toolbar>
 </template>
 
 <script>
+import { mapState, mapActions, mapGetters } from "vuex";
+
 export default {
   name: "toolbar",
   data() {
@@ -20,6 +34,14 @@ export default {
   watch: {
     drawer(val) {
       this.$root.$emit("updateDrawer");
+    }
+  },
+
+  methods: {
+    logout() {
+      this.$store.dispatch("logout").then(() => {
+        this.$router.push("/login");
+      });
     }
   }
 };

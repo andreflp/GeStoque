@@ -1,31 +1,33 @@
 <template>
-  <v-container>
-    <v-flex xs12 sm8>
-      <form ref="form">
-        <v-text-field
-          label="Nome"
-          v-model="categoria.nome"
-          data-vv-name="nome"
-          :error-messages="errors.collect('nome')"
-          v-validate="'required|max:50'"
-        />
+  <v-container fluid>
+    <v-container>
+      <v-flex xs12 sm8>
+        <form ref="form">
+          <v-text-field
+            label="Nome"
+            v-model="categoria.nome"
+            data-vv-name="nome"
+            :error-messages="errors.collect('nome')"
+            v-validate="'required|max:50'"
+          />
 
-        <v-btn v-if="$route.name === 'Categoria' " @click="addCategoria(categoria)">Enviar</v-btn>
-        <v-btn v-else @click="updateCategoria(categoria.id, categoria)">Editar</v-btn>
-        <v-btn @click="clear">Limpar</v-btn>
-        <alerta :snack="snack"></alerta>
-        <v-dialog v-model="dialog" persistent max-width="290">
-          <v-card>
-            <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
-            <v-card-text>Categoria já cadastrada.</v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </form>
-    </v-flex>  
+          <v-btn v-if="$route.name === 'Categoria' " @click="addCategoria(categoria)">Enviar</v-btn>
+          <v-btn v-else @click="updateCategoria(categoria.id, categoria)">Editar</v-btn>
+          <v-btn @click="clear">Limpar</v-btn>
+          <alerta :snack="snack"></alerta>
+          <v-dialog v-model="dialog" persistent max-width="290">
+            <v-card>
+              <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
+              <v-card-text>Categoria já cadastrada.</v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </form>
+      </v-flex>  
+    </v-container>
   </v-container>
 </template>
 
@@ -64,11 +66,15 @@ export default {
   methods: {
     addCategoria(categoria) {
       const nome = this.categoria.nome;
+      const token = localStorage.getItem("token");
       const url = "http://localhost:8080/Gestoque/categoria/new";
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
-            .post(url, categoria, { params: { nome: nome } })
+            .post(url, categoria, {
+              params: { nome: nome },
+              headers: { Authorization: `${token}` }
+            })
             .then(resp => {
               if (resp.data === true) {
                 this.dialog = true;
@@ -86,11 +92,15 @@ export default {
 
     updateCategoria(id, categoria) {
       const nome = this.categoria.nome;
+      const token = localStorage.getItem("token");
       const url = `http://localhost:8080/Gestoque/categoria/update/${id}`;
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
-            .put(url, categoria, { params: { nome: nome } })
+            .put(url, categoria, {
+              params: { nome: nome },
+              headers: { Authorization: `${token}` }
+            })
             .then(resp => {
               if (resp.data === true) {
                 this.dialog = true;

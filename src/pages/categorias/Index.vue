@@ -1,43 +1,45 @@
 <template>
   <v-app>
-    <v-card>
-    <v-card-title>
-        <h2>Categorias</h2>
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="search"
-          label="Categorias"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-    <v-data-table
-      :headers="headers"
-      :items="categorias"
-      :search="search"
-    >
-    <template slot="items" slot-scope="props">
-      <tr>
-        <td class="text-xs-center">{{ props.item.nome }}</td>
-        <td class="text-xs-center">
-          <v-tooltip left>
-            <v-btn  flat icon color="primary" slot="activator" :to="`categoria/${props.item.id}`">
-              <v-icon>edit</v-icon>
-            </v-btn>
-            <span>Editar</span>
-          </v-tooltip>
-          <v-tooltip right>  
-            <v-btn flat icon color="red" slot="activator" @click="confirmDialog(props.item, props.item.id)">
-              <v-icon>delete</v-icon>
-            </v-btn>
-            <span>Remover</span>
-          </v-tooltip>
-        </td>
-      </tr>
-    </template>
-  </v-data-table>
-  </v-card>
+    <v-container fluid>
+      <v-card>
+        <v-card-title>
+            <h2>Categorias</h2>
+            <v-spacer></v-spacer>
+            <v-text-field
+              v-model="search"
+              append-icon="search"
+              label="Categorias"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-card-title>
+        <v-data-table
+          :headers="headers"
+          :items="categorias"
+          :search="search"
+        >
+          <template slot="items" slot-scope="props">
+            <tr>
+              <td class="text-xs-center">{{ props.item.nome }}</td>
+              <td class="text-xs-center">
+                <v-tooltip left>
+                  <v-btn  flat icon color="primary" slot="activator" :to="`categoria/${props.item.id}`">
+                    <v-icon>edit</v-icon>
+                  </v-btn>
+                  <span>Editar</span>
+                </v-tooltip>
+                <v-tooltip right>  
+                  <v-btn flat icon color="red" slot="activator" @click="confirmDialog(props.item, props.item.id)">
+                    <v-icon>delete</v-icon>
+                  </v-btn>
+                  <span>Remover</span>
+                </v-tooltip>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+      </v-card>
+    </v-container>
   </v-app>
 </template>
 

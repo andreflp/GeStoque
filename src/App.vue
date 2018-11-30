@@ -1,13 +1,14 @@
 <template>
    <v-app id="app">
+      <div v-if="$route.name != 'Login' && $route.name != 'Signup'">
         <MyMenu/>
         <Toolbar/>
-        <MyBody>
-          <transition name="router-anim" >
-            <router-view/>
-          </transition>  
-          
-        </MyBody>  
+      </div>
+      <MyBody>
+        <transition name="router-anim" >
+          <router-view/>
+        </transition>    
+      </MyBody>  
     </v-app>
 </template>
 

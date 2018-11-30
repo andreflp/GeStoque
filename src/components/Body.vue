@@ -1,8 +1,6 @@
 <template>
     <v-content class="body">
-        <v-container fluid>
-            <slot></slot>
-        </v-container>
+        <slot></slot>
     </v-content>
 </template>
 

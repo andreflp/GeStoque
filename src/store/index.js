@@ -6,9 +6,9 @@ import Categorias from '../pages/categorias/store'
 import Categoria from '../pages/categoria/store'
 import Produtos from '../pages/produtos/store'
 import Produto from '../pages/produto/store'
+import Login from '../pages/login/store/store'
 
 Vue.use(Vuex);
-
 
 export default new Vuex.Store({
   modules: {
@@ -17,6 +17,7 @@ export default new Vuex.Store({
     Categorias,
     Categoria,
     Produtos,
-    Produto
+    Produto,
+    Login
   }
 })

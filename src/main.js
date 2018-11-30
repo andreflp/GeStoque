@@ -3,7 +3,6 @@ import App from './App'
 import router from './router'
 import Vuetify from 'vuetify'
 import VeeValidate, { Validator } from "vee-validate";
-import VueCurrencyFilter from 'vue-currency-filter'
 import VueI18n from 'vue-i18n'
 import VueChart from 'vue-chart-js'
 import Animate from 'animate.css'
@@ -27,15 +26,7 @@ Vue.use(VeeValidate);
 Vue.use(money, { precision: 4 });
 filters.create(Vue);
 Validator.localize("pt_BR", pt_BR);
-Vue.use(VueCurrencyFilter,
-  {
-    symbol: 'R$',
-    thousandsSeparator: '.',
-    fractionCount: 2,
-    fractionSeparator: ',',
-    symbolPosition: 'front',
-    symbolSpacing: true
-  })
+
 Vue.use(VueI18n)
 const messages = {
   pt: {
@@ -64,6 +55,20 @@ Vue.use(Vuetify, {
     t: (key, ...params) => i18n.t(key, params)
   }
 });
+
+
+const openRoutes = ['Login', 'Signup']
+
+router.beforeEach((to, from, next) => {
+
+  if (openRoutes.includes(to.name)) {
+    next()
+  } else if (store.getters.isAuthenticated) {
+    next()
+  } else {
+    next('/login')
+  }
+})
 
 /* eslint-disable no-new */
 new Vue({

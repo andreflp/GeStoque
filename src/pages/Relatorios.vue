@@ -1,4 +1,5 @@
 <template>
+  
   <v-container>
     <div class="text-xs-center">
       <v-progress-circular
@@ -46,7 +47,7 @@
               v-validate="'required'"
             />
           </v-flex>
-         
+        
           <v-flex xs12 sm8 v-if="tipoRelatorio === 'Fornecedores'">
             <v-autocomplete
               label="Fornecedores"
