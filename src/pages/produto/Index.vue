@@ -52,7 +52,7 @@
             :error-messages="errors.collect('preço')"
             v-validate="'required'"
           />
-        
+
           <v-text-field
             label="Quantidade"
             v-model="produto.quantidade"
@@ -62,7 +62,7 @@
             v-validate="'required'"
           />
         </v-flex>
-          
+
         <alerta :snack="snack"></alerta>
         <v-btn v-if="$route.name === 'Produto'" @click="addProduto(produto)">Enviar</v-btn>
         <v-btn v-else @click="updateProduto(produto.id, produto)">Editar</v-btn>
@@ -90,7 +90,6 @@
       </form>
     </v-container>
   </v-container>
-
 </template>
 
 <script>
@@ -223,8 +222,7 @@ export default {
         if (valid) {
           axios
             .post(url, produto, {
-              params: { codigo: codigo },
-              headers: { Authorization: `${token}` }
+              params: { codigo: codigo }
             })
             .then(resp => {
               if (resp.data === true) {
@@ -249,8 +247,7 @@ export default {
         if (valid) {
           axios
             .put(url, produto, {
-              params: { codigo: codigo },
-              headers: { Authorization: `${token}` }
+              params: { codigo: codigo }
             })
             .then(resp => {
               if (resp.data === true) {

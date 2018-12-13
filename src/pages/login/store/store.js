@@ -5,6 +5,7 @@ export default {
   state: {
     token: localStorage.getItem('token') || '',
     status: '',
+    snack: false
   },
 
   actions: {
@@ -15,13 +16,16 @@ export default {
 
         axios.post(url, payload).then((response) => {
           let accessToken = response.headers.authorization;
-          context.commit('authSuccess', accessToken)
           localStorage.setItem('token', accessToken);
+          context.commit('authSuccess', accessToken);
           axios.defaults.headers.common['Authorization'] = accessToken;
-
+          context.dispatch('getUsername');
           resolve(response);
         })
           .catch((error) => {
+            if (error.response.status === 401) {
+              context.commit('snack', true);
+            }
             localStorage.removeItem('token');
             context.commit('authError')
             console.log(error);
@@ -30,10 +34,26 @@ export default {
       })
     },
 
+    getUsername() {
+      const url = "http://localhost:8080/Gestoque/usuario/getUser";
+      const token = localStorage.getItem("token");
+
+      axios
+        .get(url, { headers: { Authorization: `${token}` } })
+        .then(response => {
+          localStorage.setItem('user', response.data);
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
     logout(context) {
       return new Promise((resolve, reject) => {
         context.commit('authLogout');
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         delete axios.defaults.headers.common['Authorization'];
 
         resolve();
@@ -46,6 +66,10 @@ export default {
     authSuccess(state, token) {
       state.token = token;
       state.status = 'success';
+    },
+
+    snack(state, snack) {
+      state.snack = snack
     },
 
     authError(state) {

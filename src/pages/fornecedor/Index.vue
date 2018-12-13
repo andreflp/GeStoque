@@ -11,7 +11,7 @@
               :error-messages="errors.collect('nome')"
               v-validate="'required|max:100'"
             />
-          </v-flex>  
+          </v-flex>
 
           <v-flex xs12 sm6 md8 v-if="$route.name === 'Fornecedor'">
             <v-text-field
@@ -131,8 +131,8 @@
                 <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
               </v-card-actions>
             </v-card>
-          </v-dialog>  
-          
+          </v-dialog>
+
           <alerta :snack="snack"></alerta>
         </v-layout>
       </v-container>
@@ -209,8 +209,7 @@ export default {
         if (valid) {
           axios
             .post(url, fornecedor, {
-              params: { cnpj: cnpj },
-              headers: { Authorization: `${token}` }
+              params: { cnpj: cnpj }
             })
             .then(resp => {
               if (resp.data === true) {
@@ -235,8 +234,7 @@ export default {
         if (valid) {
           axios
             .put(url, fornecedor, {
-              params: { cnpj: cnpj },
-              headers: { Authorization: `${token}` }
+              params: { cnpj: cnpj }
             })
             .then(resp => {
               if (resp.data === true) {

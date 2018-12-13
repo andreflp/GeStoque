@@ -4,18 +4,11 @@
     <v-toolbar-title>{{$route.name}}</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
-      <v-tooltip left>
-        <v-btn 
-          @click="logout()"
-          icon
-          slot="activator"
-          dark>
+      <v-tooltip left style="margin-top: 8px">
+        <v-btn @click="logout()" icon slot="activator" dark>
           <v-icon>exit_to_app</v-icon>
-        </v-btn>
-        Logout
+        </v-btn>Logout
       </v-tooltip>
-
-      
     </v-toolbar-items>
   </v-toolbar>
 </template>

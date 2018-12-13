@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import App from './App'
+import axios from 'axios'
 import router from './router'
 import Vuetify from 'vuetify'
 import VeeValidate, { Validator } from "vee-validate";
 import VueI18n from 'vue-i18n'
 import VueChart from 'vue-chart-js'
 import Animate from 'animate.css'
+import VueCurrencyFilter from 'vue-currency-filter'
 import VuetifyConfirm from 'vuetify-confirm'
 import VueAnimateNumber from 'vue-animate-number'
 import pt_BR from "vee-validate/dist/locale/pt_BR";
@@ -18,6 +20,16 @@ import 'animate.css'
 
 Vue.config.productionTip = false
 
+Vue.use(VueCurrencyFilter,
+  {
+    symbol: 'R$',
+    thousandsSeparator: '.',
+    fractionCount: 2,
+    fractionSeparator: ',',
+    symbolPosition: 'front',
+    symbolSpacing: true
+  })
+
 Vue.use(VueChart);
 Vue.use(VueAnimateNumber);
 Vue.use(Animate);
@@ -26,6 +38,9 @@ Vue.use(VeeValidate);
 Vue.use(money, { precision: 4 });
 filters.create(Vue);
 Validator.localize("pt_BR", pt_BR);
+
+
+axios.defaults.headers.common['Authorization'] = `${localStorage.getItem('token')}`;
 
 Vue.use(VueI18n)
 const messages = {
@@ -72,6 +87,7 @@ router.beforeEach((to, from, next) => {
 
 /* eslint-disable no-new */
 new Vue({
+
   el: '#app',
   router,
   store,

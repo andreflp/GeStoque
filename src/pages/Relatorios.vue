@@ -1,34 +1,27 @@
 <template>
-  
   <v-container>
     <div class="text-xs-center">
-      <v-progress-circular
-        center
-        indeterminate
-        color="primary"
-        v-if="progress === true"
-      ></v-progress-circular>
-    </div>  
+      <v-progress-circular center indeterminate color="primary" v-if="progress === true"></v-progress-circular>
+    </div>
     <form ref="form">
       <v-container grid-list-sm>
-        <v-layout wrap>  
+        <v-layout wrap>
           <v-flex xs12 sm8>
             <v-autocomplete
-              label="Tipo Relatório" 
+              label="Tipo Relatório"
               :items="relatorios"
               v-model="tipoRelatorio"
               data-vv-name="tipo relatório"
               :error-messages="errors.collect('tipo relatório')"
               v-validate="'required'"
-            >
-            </v-autocomplete>
+            ></v-autocomplete>
           </v-flex>
 
           <v-flex></v-flex>
 
           <v-flex xs12 sm6 md4 v-if="tipoRelatorio === 'Movimentações'">
-            <v-text-field 
-              label="Data Inicial" 
+            <v-text-field
+              label="Data Inicial"
               :mask="masks.date"
               v-model="dataInicial"
               data-vv-name="data inicial"
@@ -36,10 +29,10 @@
               v-validate="'required'"
             />
           </v-flex>
-          
+
           <v-flex xs12 sm6 md4 v-if="tipoRelatorio === 'Movimentações'">
-            <v-text-field 
-              label="Data Final" 
+            <v-text-field
+              label="Data Final"
               :mask="masks.date"
               v-model="dataFinal"
               data-vv-name="data final"
@@ -47,7 +40,7 @@
               v-validate="'required'"
             />
           </v-flex>
-        
+
           <v-flex xs12 sm8 v-if="tipoRelatorio === 'Fornecedores'">
             <v-autocomplete
               label="Fornecedores"
@@ -57,9 +50,12 @@
               item-value="id"
               multiple
               chips
+              deletable-chips
+              :disabled="checkF"
             ></v-autocomplete>
+            <v-checkbox label="Todos" v-model="checkF"></v-checkbox>
           </v-flex>
-          
+
           <v-flex xs12 sm8 v-if="tipoRelatorio === 'Produtos'">
             <v-autocomplete
               label="Produtos"
@@ -69,19 +65,22 @@
               item-value="id"
               multiple
               chips
-            >
-            </v-autocomplete>
+              deletable-chips
+              :disabled="checkP"
+            ></v-autocomplete>
+            <v-checkbox label="Todos" v-model="checkP"></v-checkbox>
           </v-flex>
 
           <v-flex xs12 sm8 v-if="tipoRelatorio === 'Movimentações'">
-            <v-autocomplete 
-              label="Tipo" 
-              :items="tipo" 
+            <v-autocomplete
+              label="Tipo"
+              :items="tipo"
               multiple
               item-text="nome"
               item-value="value"
               v-model="tipoSelected"
               chips
+              deletable-chips
               data-vv-name="tipo"
               :error-messages="errors.collect('tipo')"
               v-validate="'required'"
@@ -93,7 +92,7 @@
             <v-btn v-else-if="tipoRelatorio === 'Produtos'" @click="produtosReport()">Enviar</v-btn>
             <v-btn v-else @click="movimentacaoReport()">Enviar</v-btn>
             <v-btn @click="clear()">Limpar</v-btn>
-          </v-flex>    
+          </v-flex>
         </v-layout>
       </v-container>
     </form>
@@ -122,7 +121,9 @@ export default {
       dataInicial: "",
       dataFinal: "",
       progress: false,
-      enabled: false
+      enabled: false,
+      checkF: false,
+      checkP: false
     };
   },
 
@@ -181,6 +182,7 @@ export default {
                 dataFinal: final,
                 tipos: tipos
               },
+
               responseType: "blob",
               paramsSerializer: function(params) {
                 return qs.stringify(params, { arrayFormat: "repeat" });
@@ -208,6 +210,10 @@ export default {
       let produtos = this.produtosSelected;
       const url = "http://localhost:8080/Gestoque/produto/report";
 
+      if (this.checkP === true) {
+        produtos = [0];
+      }
+
       this.$validator.validateAll().then(valid => {
         if (valid) {
           this.progress = true;
@@ -216,6 +222,7 @@ export default {
               params: {
                 produtosIds: produtos
               },
+
               responseType: "blob",
               paramsSerializer: function(params) {
                 return qs.stringify(params, { arrayFormat: "repeat" });
@@ -243,6 +250,10 @@ export default {
       let fornecedores = this.fornecedoresSelected;
       const url = "http://localhost:8080/Gestoque/fornecedor/report";
 
+      if (this.checkF === true) {
+        fornecedores = [0];
+      }
+
       this.$validator.validateAll().then(valid => {
         if (valid) {
           this.progress = true;
@@ -251,6 +262,7 @@ export default {
               params: {
                 fornecedoresIds: fornecedores
               },
+
               responseType: "blob",
               paramsSerializer: function(params) {
                 return qs.stringify(params, { arrayFormat: "repeat" });
@@ -276,11 +288,14 @@ export default {
 
     clear() {
       this.tipoRelatorio = "";
+      this.checkF = false;
+      this.checkP = false;
       this.produtosSelected = [0];
       this.fornecedoresSelected = [0];
       this.dataInicial = "";
       this.dataFinal = "";
       this.tipoSelected = [];
+      this.$validator.reset();
     }
   }
 };

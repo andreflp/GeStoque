@@ -26,7 +26,7 @@
             </v-card>
           </v-dialog>
         </form>
-      </v-flex>  
+      </v-flex>
     </v-container>
   </v-container>
 </template>
@@ -72,8 +72,7 @@ export default {
         if (valid) {
           axios
             .post(url, categoria, {
-              params: { nome: nome },
-              headers: { Authorization: `${token}` }
+              params: { nome: nome }
             })
             .then(resp => {
               if (resp.data === true) {
@@ -98,8 +97,7 @@ export default {
         if (valid) {
           axios
             .put(url, categoria, {
-              params: { nome: nome },
-              headers: { Authorization: `${token}` }
+              params: { nome: nome }
             })
             .then(resp => {
               if (resp.data === true) {

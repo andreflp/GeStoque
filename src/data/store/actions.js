@@ -10,7 +10,6 @@ const login = ({ commit }, payload) => {
       commit('authSuccess', accessToken)
       localStorage.setItem('token', accessToken);
       axios.defaults.headers.common['Authorization'] = accessToken;
-
       resolve(response);
     })
       .catch((error) => {
@@ -20,6 +19,21 @@ const login = ({ commit }, payload) => {
         reject(error)
       })
   })
+}
+
+const getUsername = ({ }) => {
+  const url = "http://localhost:8080/Gestoque/usuario/getUser";
+  const token = localStorage.getItem("token");
+
+  axios
+    .get(url, { headers: { Authorization: `${token}` } })
+    .then(response => {
+      localStorage.setItem('user', response.data);
+      console.log(response);
+    })
+    .catch(error => {
+      console.log(error);
+    });
 }
 
 const logout = (commit) => {
@@ -35,5 +49,6 @@ const logout = (commit) => {
 
 export default {
   login,
-  logout
+  logout,
+  getUsername
 }
