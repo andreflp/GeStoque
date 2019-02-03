@@ -1,22 +1,20 @@
 import axios from 'axios'
-const token = localStorage.getItem('token');
 
 const setProdutos = async ({ commit }) => {
-  let url = "http://localhost:8080/Gestoque/produto/produtos";
-  const produtos = (await axios.get(url)).data;
-  commit('SET_PRODUTOS', { produtos });
+  const url = 'http://localhost:3000/produto'
+  const produtos = (await axios.get(url)).data.produtos
+  commit('SET_PRODUTOS', { produtos })
 }
 
-const deleteProduto = ({ commit, state }, [item, id]) => {
-  let produtos = state.produtos;
-  const index = produtos.indexOf(item);
-  let url = `http://localhost:8080/Gestoque/produto/delete/${id}`;
-  axios.delete(url).then(resp => {
-    if (resp.status === 200) {
-      produtos.splice(index, 1);
-      commit("SET_PRODUTOS", { produtos })
-    }
-  })
+const deleteProduto = async ({ commit, state }, [item, id]) => {
+  let produtos = state.produtos
+  const index = produtos.indexOf(item)
+  let url = `http://localhost:3000/produto/${id}`
+  const resp = await axios.delete(url)
+  if (resp.status === 200) {
+    produtos.splice(index, 1)
+    commit('SET_PRODUTOS', { produtos })
+  }
 }
 
 export default {

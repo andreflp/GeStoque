@@ -3,5 +3,5 @@ const SET_FORNECEDORES = (state, obj) => {
 }
 
 export default {
-  SET_FORNECEDORES,
+  SET_FORNECEDORES
 }

@@ -4,66 +4,64 @@
       <form ref="form" @submit.prevent="addProduto">
         <v-flex xs12 sm8>
           <v-text-field
-            label="Nome"
             v-model="produto.nome"
+            v-validate="'required|max:50'"
+            label="Nome"
             data-vv-name="nome"
             :error-messages="errors.collect('nome')"
-            v-validate="'required|max:50'"
           />
 
           <v-text-field
-            label="Código"
             v-model="produto.codigo"
+            v-validate="'required'"
+            label="Código"
             data-vv-name="código"
             :error-messages="errors.collect('código')"
-            v-validate="'required'"
           />
 
           <v-autocomplete
+            v-model="produto.fornecedorId"
+            v-validate="'required'"
             label="Fornecedores"
-            v-model="produto.fornecedor"
             :items="list"
             item-text="nome"
             item-value="id"
             data-vv-name="fornecedor"
             :error-messages="errors.collect('fornecedor')"
-            v-validate="'required'"
-            return-object
           ></v-autocomplete>
 
           <v-autocomplete
+            v-model="produto.categoriaId"
+            v-validate="'required'"
             label="Categoria"
-            v-model="produto.categoria"
             :items="categorias"
             item-text="nome"
             item-value="id"
             data-vv-name="categoria"
             :error-messages="errors.collect('categoria')"
-            v-validate="'required'"
-            return-object
           ></v-autocomplete>
 
           <v-text-field
-            label="Preço"
             ref="preco"
             v-model.lazy="produto.preco"
             v-money="money"
+            v-validate="'required'"
+            label="Preço"
             data-vv-name="preço"
             :error-messages="errors.collect('preço')"
-            v-validate="'required'"
           />
 
           <v-text-field
-            label="Quantidade"
-            v-model="produto.quantidade"
-            data-vv-name="quantidade"
             v-if="$route.name === 'Produto'"
-            :error-messages="errors.collect('quantidade')"
+            v-model="produto.quantidade"
             v-validate="'required'"
+            label="Quantidade"
+            data-vv-name="quantidade"
+            :error-messages="errors.collect('quantidade')"
           />
         </v-flex>
 
-        <alerta :snack="snack"></alerta>
+        <alerta :snack="snack" text="Cadastro efetuado com sucesso!"></alerta>
         <v-btn v-if="$route.name === 'Produto'" @click="addProduto(produto)">Enviar</v-btn>
         <v-btn v-else @click="updateProduto(produto.id, produto)">Editar</v-btn>
         <v-btn @click="clear()">Limpar</v-btn>
@@ -93,38 +91,41 @@
 </template>
 
 <script>
-import masks from "@/utils/masks/masks";
-import axios from "axios";
-import { mapState, mapActions, mapGetters } from "vuex";
-import Alerta from "@/components/Alerta";
-import { VMoney } from "v-money";
+import masks from '@/utils/masks/masks'
+import axios from 'axios'
+import { mapState, mapActions } from 'vuex'
+import Alerta from '@/components/Alerta'
+import { VMoney } from 'v-money'
 export default {
+  name: 'FormProduto',
   components: {
     Alerta
   },
   $_veeValidate: {
-    validator: "new"
+    validator: 'new'
   },
+
+  directives: { money: VMoney },
   props: {
     id: {
-      type: [Number, String]
+      type: [Number, String],
+      default: ''
     }
   },
-  name: "form-produto",
-  data() {
+  data () {
     return {
       produto: {
-        id: "",
-        codigo: "",
-        nome: "",
-        categoria: "",
+        id: '',
+        codigo: '',
+        nome: '',
+        categoriaId: '',
         preco: 0,
-        quantidade: "",
-        fornecedor: ""
+        quantidade: '',
+        fornecedorId: ''
       },
       money: {
-        decimal: ",",
-        thousands: ".",
+        decimal: ',',
+        thousands: '.',
         precision: 2,
         masked: false
       },
@@ -132,117 +133,112 @@ export default {
       snack: true,
       dialog: false,
       dialog2: false,
-      msg: ""
-    };
-  },
-
-  directives: { money: VMoney },
-
-  created() {
-    this.setFornecedores();
-    this.setCategorias();
-  },
-
-  mounted() {
-    this.getProduto(this.id);
+      msg: ''
+    }
   },
 
   computed: {
-    ...mapState("Categorias", ["categorias"]),
-    ...mapState("Fornecedores", ["list"]),
-    ...mapState("Produtos", ["produtos"])
+    ...mapState('Categorias', ['categorias']),
+    ...mapState('Fornecedores', ['list']),
+    ...mapState('Produtos', ['produtos'])
+  },
+
+  created () {
+    this.setFornecedores()
+    this.setCategorias()
+  },
+
+  mounted () {
+    this.getProduto(this.id)
   },
 
   methods: {
-    ...mapActions("Categorias", ["setCategorias"]),
-    ...mapActions("Produtos", ["setProdutos"]),
-    ...mapActions("Fornecedores", ["setFornecedores"]),
+    ...mapActions('Categorias', ['setCategorias']),
+    ...mapActions('Produtos', ['setProdutos']),
+    ...mapActions('Fornecedores', ['setFornecedores']),
 
-    changeSnack() {
-      this.$root.$emit("change-snack", this.snack);
+    changeSnack () {
+      this.$root.$emit('change-snack', this.snack)
     },
 
-    replacePreco(produto) {
+    replacePreco (produto) {
       produto.preco = this.produto.preco
-        .replace("R$", "")
-        .replace(".", "")
-        .replace(",", ".");
+        .replace('R$', '')
+        .replace('.', '')
+        .replace(',', '.')
     },
 
-    searchAndSave(produto) {
+    searchAndSave (produto) {
       const categoriaResult = this.categorias.filter(
         item => item.id == produto.categoria.id
-      );
+      )
       const fornecedorResult = this.list.filter(
         item => item.id == produto.fornecedor.id
-      );
+      )
 
       if (
         categoriaResult &&
         categoriaResult.length > 0 &&
         (fornecedorResult && fornecedorResult.length > 0)
       ) {
-        this.addProduto(produto);
+        this.addProduto(produto)
       } else {
         if (!(categoriaResult && categoriaResult.length > 0)) {
-          this.msg = "Categoria não encontrada.";
-          this.dialog2 = true;
+          this.msg = 'Categoria não encontrada.'
+          this.dialog2 = true
         } else if (!(fornecedorResult && fornecedorResult.length > 0)) {
-          this.msg = "Fornecedor não encontrado.";
-          this.dialog2 = true;
+          this.msg = 'Fornecedor não encontrado.'
+          this.dialog2 = true
         }
       }
     },
 
-    searchCategoria(categoria) {
-      const categoriaResult = this.categorias.filter(item => item == categoria);
+    /* searchCategoria (categoria) {
+      const categoriaResult = this.categorias.filter(item => item === categoria)
       if (categoriaResult && categoriaResult.length > 0) {
-        this.addProduto(produto);
+        this.addProduto(produto)
       } else {
-        this.msg = "Categoria não encontrada.";
-        this.dialog2 = true;
+        this.msg = 'Categoria não encontrada.'
+        this.dialog2 = true
       }
     },
 
-    searchFornecedor(fornecedor) {
-      const fornecedorResult = this.list.filter(item => item == fornecedor);
+    searchFornecedor (fornecedor) {
+      const fornecedorResult = this.list.filter(item => item === fornecedor)
       if (fornecedorResult && fornecedorResult.length > 0) {
-        this.addProduto(produto);
+        this.addProduto(produto)
       } else {
-        this.msg = "Fornecedor não encontrado.";
-        this.dialog2 = true;
+        this.msg = 'Fornecedor não encontrado.'
+        this.dialog2 = true
       }
-    },
+    }, */
 
-    addProduto(produto) {
-      this.replacePreco(produto);
-      const codigo = this.produto.codigo;
-      const url = "http://localhost:8080/Gestoque/produto/new";
-      this.$validator.validateAll().then(valid => {
-        if (valid) {
-          axios
-            .post(url, produto, {
-              params: { codigo: codigo }
-            })
-            .then(resp => {
-              if (resp.data === true) {
-                this.dialog = true;
-              } else if (resp.data === false) {
-                this.changeSnack();
-                this.clear();
-              }
-            })
-            .catch(error => {
-              console.log(error);
-            });
+    addProduto (produto) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          this.replacePreco(produto)
+          const url = 'http://localhost:3000/produto'
+          const valid = await this.$validator.validateAll()
+          if (valid) {
+            const resp = await axios.post(url, produto)
+            if (resp.status === 200) {
+              this.changeSnack()
+              this.clear()
+            }
+          }
+        } catch (error) {
+          if (error.response.status === 400) {
+            this.msgErro = error.response.data.msg
+            this.dialog = true
+          }
         }
-      });
+      })
     },
 
-    updateProduto(id, produto) {
-      this.replacePreco(produto);
-      const codigo = this.produto.codigo;
-      const url = `http://localhost:8080/Gestoque/produto/update/${id}`;
+    updateProduto (id, produto) {
+      this.replacePreco(produto)
+      const codigo = this.produto.codigo
+      const url = `http://localhost:8080/Gestoque/produto/update/${id}`
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
@@ -251,38 +247,38 @@ export default {
             })
             .then(resp => {
               if (resp.data === true) {
-                this.dialog = true;
+                this.dialog = true
               } else if (resp.data === false) {
-                this.$router.push("/produtos");
+                this.$router.push('/produtos')
               }
             })
             .catch(error => {
-              console.log(error);
-            });
+              console.log(error)
+            })
         }
-      });
+      })
     },
 
-    clear() {
-      this.produto.nome = "";
-      this.produto.codigo = "";
-      this.produto.categoria = "";
-      this.produto.fornecedor = "";
-      this.$refs.preco.$el.getElementsByTagName("input")[0].value = 0;
-      this.produto.preco = "";
-      this.produto.quantidade = "";
-      this.$validator.reset();
+    clear () {
+      this.produto.nome = ''
+      this.produto.codigo = ''
+      this.produto.categoriaId = ''
+      this.produto.fornecedorId = ''
+      this.$refs.preco.$el.getElementsByTagName('input')[0].value = 0
+      this.produto.preco = ''
+      this.produto.quantidade = ''
+      this.$validator.reset()
     },
 
-    getProduto(id) {
+    getProduto (id) {
       if (id) {
-        const produtos = this.produtos;
-        const produtoResult = produtos.filter(item => item.id == id);
+        const produtos = this.produtos
+        const produtoResult = produtos.filter(item => item.id == id)
         if (produtoResult && produtoResult.length > 0) {
-          this.produto = produtoResult[0];
+          this.produto = produtoResult[0]
         }
       }
     }
   }
-};
+}
 </script>

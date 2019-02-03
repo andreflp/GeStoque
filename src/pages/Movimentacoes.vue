@@ -4,35 +4,35 @@
       <v-flex xs12 sm8>
         <form ref="form" @submit.prevent="submit">
           <v-combobox
-            label="Produto"
             v-model="movimentacao.produto"
+            v-validate="'required'"
+            label="Produto"
             :items="produtos"
             item-text="nome"
             item-value="id"
             data-vv-name="produto"
             :error-messages="errors.collect('produto')"
-            v-validate="'required'"
           ></v-combobox>
 
           <v-select
-            label="Tipo"
             v-model="movimentacao.tipo"
+            v-validate="'required'"
+            label="Tipo"
             item-text="nome"
             item-value="value"
             data-vv-name="tipo"
             :items="tipos"
             :error-messages="errors.collect('tipo')"
-            v-validate="'required'"
           ></v-select>
 
           <v-text-field
-            label="Quantidade"
             v-model="movimentacao.quantidade"
+            v-validate="'required|numeric'"
+            label="Quantidade"
             data-vv-name="quantidade"
             :error-messages="errors.collect('quantidade')"
-            v-validate="'required|numeric'"
           />
-          <v-btn @click="searchAndSave(movimentacao);">Enviar</v-btn>
+          <v-btn @click="searchAndSave(movimentacao)">Enviar</v-btn>
           <v-btn>Limpar</v-btn>
           <v-dialog v-model="dialog" persistent max-width="290">
             <v-card>
@@ -56,108 +56,105 @@
           </v-dialog>
         </form>
       </v-flex>
-    </v-container>  
-  </v-container>    
+    </v-container>
+  </v-container>
 </template>
 
 <script>
-import axios from "axios";
-import Alerta from "@/components/Alerta";
-import { mapState, mapActions, mapGetters } from "vuex";
+import axios from 'axios'
+import { mapState, mapActions } from 'vuex'
 export default {
-  components: {
-    Alerta
-  },
+  name: 'Movimentacoes',
+
   $_veeValidate: {
-    validator: "new"
+    validator: 'new'
   },
   props: {
     id: {
-      type: [Number, String]
+      type: [Number, String],
+      default: 0
     }
   },
-  name: "movimentacoes",
-  data() {
+  data () {
     return {
       movimentacao: {
-        tipo: "",
-        produto: "",
-        quantidade: ""
+        tipo: '',
+        produto: '',
+        quantidade: ''
       },
-      tipos: [{ nome: "Entrada", value: "E" }, { nome: "Saida", value: "S" }],
+      tipos: [{ nome: 'Entrada', value: 'E' }, { nome: 'Saida', value: 'S' }],
       dialog: false,
       dialog2: false
-    };
+    }
   },
 
   computed: {
-    ...mapState("Produtos", ["produtos"])
+    ...mapState('Produtos', ['produtos'])
   },
 
-  created() {
-    this.setProdutos();
+  created () {
+    this.setProdutos()
   },
 
-  mounted() {
-    this.getProduto(this.id);
+  mounted () {
+    this.getProduto(this.id)
   },
 
   methods: {
-    ...mapActions("Produtos", ["setProdutos"]),
+    ...mapActions('Produtos', ['setProdutos']),
 
-    searchAndSave(movimentacao) {
-      const produto = movimentacao.produto;
-      const produtoResult = this.produtos.filter(item => item == produto);
+    searchAndSave (movimentacao) {
+      const produto = movimentacao.produto
+      const produtoResult = this.produtos.filter(item => item === produto)
 
       if (produtoResult && produtoResult.length > 0) {
-        this.addMovimentacao(movimentacao);
+        this.addMovimentacao(movimentacao)
       } else {
-        this.dialog2 = true;
+        this.dialog2 = true
       }
     },
 
-    addMovimentacao(movimentacao) {
-      const url = "http://localhost:8080/Gestoque/movimentacao/new";
+    addMovimentacao (movimentacao) {
+      const url = 'http://localhost:8080/Gestoque/movimentacao/new'
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios
             .post(url, movimentacao)
             .then(resp => {
               if (resp.data === true) {
-                this.$router.push("/produtos");
+                this.$router.push('/produtos')
               } else if (resp.data === false) {
-                this.dialog = true;
+                this.dialog = true
               }
             })
             .catch(error => {
-              console.log(error);
-            });
+              console.error(error)
+            })
         }
-      });
+      })
     },
-    changeSnack() {
-      this.$root.$emit("change-snack", this.snack);
+    changeSnack () {
+      this.$root.$emit('change-snack', this.snack)
     },
-    clear() {
-      this.movimentacao.tipo = "";
-      this.movimentacao.produto = "";
-      this.movimentacao.quantidade = "";
-      this.$validator.reset();
+    clear () {
+      this.movimentacao.tipo = ''
+      this.movimentacao.produto = ''
+      this.movimentacao.quantidade = ''
+      this.$validator.reset()
     },
 
-    getProduto(id) {
+    getProduto (id) {
       if (id) {
-        const produtos = this.produtos;
-        const produtoResult = produtos.filter(item => item.id == id);
+        const produtos = this.produtos
+        const produtoResult = produtos.filter(item => item.id === id)
         if (produtoResult && produtoResult.length > 0) {
-          this.produto = produtoResult[0];
-          this.movimentacao.produto = this.produto;
+          this.produto = produtoResult[0]
+          this.movimentacao.produto = this.produto
         }
       }
     }
   }
-};
+}
 </script>
 
-<style>
-</style>
+<style></style>

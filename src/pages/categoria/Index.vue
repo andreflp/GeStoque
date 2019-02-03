@@ -4,17 +4,17 @@
       <v-flex xs12 sm8>
         <form ref="form">
           <v-text-field
-            label="Nome"
             v-model="categoria.nome"
+            v-validate="'required|max:50'"
+            label="Nome"
             data-vv-name="nome"
             :error-messages="errors.collect('nome')"
-            v-validate="'required|max:50'"
           />
 
           <v-btn v-if="$route.name === 'Categoria' " @click="addCategoria(categoria)">Enviar</v-btn>
           <v-btn v-else @click="updateCategoria(categoria.id, categoria)">Editar</v-btn>
           <v-btn @click="clear">Limpar</v-btn>
-          <alerta :snack="snack"></alerta>
+          <alerta :snack="snack" text="Cadastro efetuado com sucesso!"></alerta>
           <v-dialog v-model="dialog" persistent max-width="290">
             <v-card>
               <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
@@ -32,105 +32,105 @@
 </template>
 
 <script>
-import axios from "axios";
-import Alerta from "@/components/Alerta";
+import axios from 'axios'
+import Alerta from '@/components/Alerta'
+import { mapState } from 'vuex'
 export default {
+  name: 'FormCategoria',
   components: {
     Alerta
   },
 
   $_veeValidate: {
-    validator: "new"
+    validator: 'new'
   },
   props: {
     id: {
-      type: [Number, String]
+      type: [Number, String],
+      default: 0 | ''
     }
   },
-  name: "form-categoria",
-  data() {
+  data () {
     return {
       categoria: {
-        id: "",
-        nome: ""
+        id: '',
+        nome: ''
       },
       dialog: false,
-      snack: true
-    };
+      snack: true,
+      msgErro: ''
+    }
   },
 
-  mounted() {
-    this.getCategoria(this.id);
+  computed: {
+    ...mapState('Categorias', ['categorias'])
+  },
+
+  mounted () {
+    this.getCategoria(this.id)
   },
 
   methods: {
-    addCategoria(categoria) {
-      const nome = this.categoria.nome;
-      const token = localStorage.getItem("token");
-      const url = "http://localhost:8080/Gestoque/categoria/new";
-      this.$validator.validateAll().then(valid => {
-        if (valid) {
-          axios
-            .post(url, categoria, {
-              params: { nome: nome }
-            })
-            .then(resp => {
-              if (resp.data === true) {
-                this.dialog = true;
-              } else if (resp.data === false) {
-                this.changeSnack();
-                this.clear();
-              }
-            })
-            .catch(error => {
-              console.log(error);
-            });
+    addCategoria (categoria) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          const url = 'http://localhost:3000/categoria'
+          const valid = await this.$validator.validateAll()
+          if (valid) {
+            const resp = await axios.post(url, categoria)
+            if (resp.status === 200) {
+              this.changeSnack()
+              this.clear()
+            }
+          }
+        } catch (error) {
+          if (error.response.status === 400) {
+            this.msgErro = error.response.data.msg
+            this.dialog = true
+          }
         }
-      });
+      })
     },
 
-    updateCategoria(id, categoria) {
-      const nome = this.categoria.nome;
-      const token = localStorage.getItem("token");
-      const url = `http://localhost:8080/Gestoque/categoria/update/${id}`;
-      this.$validator.validateAll().then(valid => {
-        if (valid) {
-          axios
-            .put(url, categoria, {
-              params: { nome: nome }
-            })
-            .then(resp => {
-              if (resp.data === true) {
-                this.dialog = true;
-              } else if (resp.data === false) {
-                this.$router.push("/categorias");
-              }
-            })
-            .catch(error => {
-              console.log(error);
-            });
+    updateCategoria (id, categoria) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          const url = `http://localhost:3000/categoria/${id}`
+          const valid = await this.$validator.validateAll()
+          if (valid) {
+            const resp = await axios.put(url, categoria)
+            if (resp.status === 200) {
+              this.$router.push('/categorias')
+            }
+          }
+        } catch (error) {
+          if (error.response.status === 400) {
+            this.msgErro = error.response.data.msg
+            this.dialog = true
+          }
         }
-      });
+      })
     },
 
-    getCategoria(id) {
+    getCategoria (id) {
       if (id) {
-        const categorias = this.$store.state.Categorias.categorias;
-        const categoriaResult = categorias.filter(item => item.id == id);
+        const categorias = this.categorias
+        // eslint-disable-next-line eqeqeq
+        const categoriaResult = categorias.filter(item => item.id == id)
         if (categoriaResult && categoriaResult.length > 0) {
-          this.categoria = categoriaResult[0];
+          this.categoria = categoriaResult[0]
         }
       }
     },
 
-    changeSnack() {
-      this.$root.$emit("change-snack", this.snack);
+    changeSnack () {
+      this.$root.$emit('change-snack', this.snack)
     },
 
-    clear() {
-      this.categoria.nome = "";
-      this.$validator.reset();
+    clear () {
+      this.categoria.nome = ''
+      this.$validator.reset()
     }
   }
-};
+}
 </script>

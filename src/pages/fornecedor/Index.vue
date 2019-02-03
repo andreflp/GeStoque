@@ -5,120 +5,120 @@
         <v-layout wrap>
           <v-flex xs12 sm6 md8>
             <v-text-field
-              label="Nome"
               v-model="fornecedor.nome"
+              v-validate="'required|max:100'"
+              label="Nome"
               data-vv-name="nome"
               :error-messages="errors.collect('nome')"
-              v-validate="'required|max:100'"
             />
           </v-flex>
 
-          <v-flex xs12 sm6 md8 v-if="$route.name === 'Fornecedor'">
+          <v-flex v-if="$route.name === 'Fornecedor'" xs12 sm6 md8>
             <v-text-field
-              label="CNPJ"
               v-model="fornecedor.cnpj"
+              v-validate="'required'"
+              label="CNPJ"
               :mask="masks.cnpj"
               data-vv-name="cnpj"
+              :error-messages="errors.collect('cnpj')"
               @change="buscarFornecedor(fornecedor.cnpj)"
-              :error-messages="errors.collect('cnpj')"
-              v-validate="'required'"
             />
           </v-flex>
 
-          <v-flex xs12 sm6 md8 v-else>
+          <v-flex v-else xs12 sm6 md8>
             <v-text-field
-              label="CNPJ"
               v-model="fornecedor.cnpj"
+              v-validate="'required'"
+              label="CNPJ"
               :mask="masks.cnpj"
               data-vv-name="cnpj"
               :error-messages="errors.collect('cnpj')"
-              v-validate="'required'"
             />
           </v-flex>
 
           <v-flex xs12 sm6 md8>
             <v-text-field
-              label="E-mail"
               v-model="fornecedor.email"
+              v-validate="'required|email'"
+              label="E-mail"
               data-vv-name="email"
               :error-messages="errors.collect('email')"
-              v-validate="'required|email'"
             />
           </v-flex>
 
           <v-flex xs12 sm6 md8>
             <v-text-field
-              label="CEP"
               v-model="fornecedor.cep"
+              v-validate="'required'"
+              label="CEP"
               :mask="masks.cep"
               data-vv-name="cep"
               :error-messages="errors.collect('cep')"
-              v-validate="'required'"
             />
           </v-flex>
 
           <v-flex xs12 sm6 md6>
             <v-text-field
-              label="Rua"
               v-model="fornecedor.logradouro"
+              v-validate="'required'"
+              label="Rua"
               data-vv-name="rua"
               :error-messages="errors.collect('rua')"
-              v-validate="'required'"
             />
           </v-flex>
 
           <v-flex xs12 sm6 md2>
             <v-text-field
+              v-model="fornecedor.numero"
               label="Nº"
               data-vv-name="número"
-              v-model="fornecedor.numero"
               :error-messages="errors.collect('número')"
             ></v-text-field>
           </v-flex>
 
           <v-flex xs12 sm6 md5>
             <v-text-field
-              label="Bairro"
               v-model="fornecedor.bairro"
+              v-validate="'required'"
+              label="Bairro"
               data-vv-name="bairro"
               :error-messages="errors.collect('bairro')"
-              v-validate="'required'"
             />
           </v-flex>
 
           <v-flex xs12 sm6 md2>
             <v-text-field
-              label="Cidade"
               v-model="fornecedor.municipio"
+              v-validate="'required'"
+              label="Cidade"
               data-vv-name="cidade"
               :error-messages="errors.collect('cidade')"
-              v-validate="'required'"
             />
           </v-flex>
 
           <v-flex xs12 sm6 md1>
             <v-text-field
-              label="UF"
               v-model="fornecedor.uf"
+              v-validate="'required'"
+              label="UF"
               data-vv-name="uf"
               :error-messages="errors.collect('uf')"
-              v-validate="'required'"
             />
           </v-flex>
 
           <v-flex xs12 sm6 md8>
             <v-text-field
-              label="Telefone"
               v-model="fornecedor.telefone"
+              v-validate="'required'"
+              label="Telefone"
               :mask="masks.telefone"
               data-vv-name="telefone"
               :error-messages="errors.collect('telefone')"
-              v-validate="'required'"
             />
           </v-flex>
 
           <v-flex xs12 sm6 md8>
-            <v-btn v-if="$route.name === 'Fornecedor'" @click="addFornecedor(fornecedor)">Enviar</v-btn>
+            <v-btn v-if="$route.name === 'Fornecedor'" @click="addFornecedor()">Enviar</v-btn>
             <v-btn v-else @click="updateFornecedor(fornecedor.id, fornecedor)">Editar</v-btn>
             <v-btn @click="clear">Limpar</v-btn>
           </v-flex>
@@ -133,7 +133,7 @@
             </v-card>
           </v-dialog>
 
-          <alerta :snack="snack"></alerta>
+          <alerta :snack="snack" text="Cadastro efetuado com sucesso!"></alerta>
         </v-layout>
       </v-container>
     </v-container>
@@ -141,138 +141,141 @@
 </template>
 
 <script>
-import masks from "@/utils/masks/masks";
-import axios from "axios";
-import Alerta from "@/components/Alerta";
+import masks from '@/utils/masks/masks'
+import axios from 'axios'
+import Alerta from '@/components/Alerta'
+import { mapState } from 'vuex'
 export default {
+  name: 'FormFornecedor',
   components: {
     Alerta
   },
 
   $_veeValidate: {
-    validator: "new"
+    validator: 'new'
   },
   props: {
     id: {
-      type: [Number, String]
+      type: [Number, String],
+      default: 0 | ''
     }
   },
-  name: "form-fornecedor",
-  data() {
+  data () {
     return {
       fornecedor: {
-        id: "",
-        codigo: "",
-        nome: "",
-        logradouro: "",
-        numero: "",
-        bairro: "",
-        municipio: "",
-        cep: "",
-        uf: "",
-        cep: "",
-        telefone: "",
-        email: "",
-        cnpj: ""
+        id: '',
+        nome: '',
+        telefone: '',
+        cnpj: '',
+        email: '',
+        cep: '',
+        logradouro: '',
+        bairro: '',
+        municipio: '',
+        uf: '',
+        numero: ''
       },
       dialog: false,
       masks,
-      snack: true
-    };
+      snack: true,
+      msgErro: ''
+    }
   },
-  mounted() {
-    this.getFornecedor(this.id);
+
+  computed: {
+    ...mapState('Fornecedores', ['list'])
+  },
+
+  mounted () {
+    this.getFornecedor(this.id)
   },
 
   methods: {
-    buscarFornecedor(cnpj) {
-      const url = `https://www.receitaws.com.br/v1/cnpj/${cnpj}`;
+    buscarFornecedor (cnpj) {
+      const url = `https://www.receitaws.com.br/v1/cnpj/${cnpj}`
       axios
         .get(url)
         .then(resp => {
-          this.fornecedor = resp.data;
+          this.fornecedor = resp.data
         })
         .catch(error => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     },
 
-    changeSnack() {
-      this.$root.$emit("change-snack", this.snack);
+    changeSnack () {
+      this.$root.$emit('change-snack', this.snack)
     },
 
-    addFornecedor(fornecedor) {
-      const cnpj = this.fornecedor.cnpj;
-      const token = localStorage.getItem("token");
-      const url = "http://localhost:8080/Gestoque/fornecedor/new";
-      this.$validator.validateAll().then(valid => {
-        if (valid) {
-          axios
-            .post(url, fornecedor, {
-              params: { cnpj: cnpj }
-            })
-            .then(resp => {
-              if (resp.data === true) {
-                this.dialog = true;
-              } else if (resp.data === false) {
-                this.changeSnack();
-                this.clear();
-              }
-            })
-            .catch(error => {
-              console.log(error);
-            });
+    addFornecedor () {
+      return new Promise(async (resolve, reject) => {
+        try {
+          const fornecedor = this.fornecedor
+          const url = 'http://localhost:3000/fornecedor'
+          const valid = await this.$validator.validateAll()
+          if (valid) {
+            const resp = await axios.post(url, fornecedor)
+            if (resp.status === 200) {
+              this.changeSnack()
+              this.clear()
+            }
+          }
+        } catch (error) {
+          if (error.response.status === 400) {
+            this.msgErro = error.response.data.msg
+            this.dialog = true
+          }
         }
-      });
+      })
     },
 
-    updateFornecedor(id, fornecedor) {
-      const cnpj = this.fornecedor.cnpj;
-      const url = `http://localhost:8080/Gestoque/fornecedor/${id}`;
-      const token = localStorage.getItem("token");
-      this.$validator.validateAll().then(valid => {
-        if (valid) {
-          axios
-            .put(url, fornecedor, {
-              params: { cnpj: cnpj }
-            })
-            .then(resp => {
-              if (resp.data === true) {
-                this.dialog = true;
-              } else if (resp.data === false) {
-                this.$router.push("/fornecedores");
-              }
-            })
-            .catch(error => {
-              console.log(error);
-            });
+    updateFornecedor (id, fornecedor) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          const fornecedor = this.fornecedor
+          const url = `http://localhost:3000/fornecedor/${id}`
+          const valid = await this.$validator.validateAll()
+          if (valid) {
+            const resp = await axios.put(url, fornecedor)
+            if (resp.status === 200) {
+              this.$router.push('/fornecedores')
+            } else {
+              this.dialog = true
+            }
+          }
+        } catch (error) {
+          if (error.response.status === 400) {
+            this.msgErro = error.response.data.msg
+            this.dialog = true
+          }
         }
-      });
+      })
     },
 
-    getFornecedor(id) {
+    getFornecedor (id) {
       if (id) {
-        const fornecedores = this.$store.state.Fornecedores.list;
-        const fornecedoresResult = fornecedores.filter(item => item.id == id);
+        const fornecedores = this.list
+        // eslint-disable-next-line eqeqeq
+        const fornecedoresResult = fornecedores.filter(item => item.id == id)
         if (fornecedoresResult && fornecedoresResult.length > 0) {
-          this.fornecedor = fornecedoresResult[0];
+          this.fornecedor = fornecedoresResult[0]
         }
       }
     },
 
-    clear() {
-      this.fornecedor.nome = "";
-      this.fornecedor.cnpj = "";
-      this.fornecedor.email = "";
-      this.fornecedor.cep = "";
-      this.fornecedor.logradouro = "";
-      this.fornecedor.bairro = "";
-      this.fornecedor.telefone = "";
-      this.fornecedor.numero = "";
-      this.fornecedor.municipio = "";
-      this.fornecedor.uf = "";
-      this.$validator.reset();
+    clear () {
+      this.fornecedor.nome = ''
+      this.fornecedor.cnpj = ''
+      this.fornecedor.email = ''
+      this.fornecedor.cep = ''
+      this.fornecedor.logradouro = ''
+      this.fornecedor.bairro = ''
+      this.fornecedor.telefone = ''
+      this.fornecedor.numero = ''
+      this.fornecedor.municipio = ''
+      this.fornecedor.uf = ''
+      this.$validator.reset()
     }
   }
-};
+}
 </script>

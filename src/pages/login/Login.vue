@@ -24,9 +24,8 @@
 </template>
 
 <script>
-import SignUp from "../../components/SignUp";
-import LoginForm from "../../components/LoginForm";
-import { mapState, mapActions, mapGetters } from "vuex";
+import SignUp from '../../components/SignUp'
+import LoginForm from '../../components/LoginForm'
 
 export default {
   components: {
@@ -35,12 +34,9 @@ export default {
   },
 
   data: () => ({}),
-  props: {
-    source: String
-  },
 
   methods: {}
-};
+}
 </script>
 
 <style>

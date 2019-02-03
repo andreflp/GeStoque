@@ -15,12 +15,12 @@ import MyBody from '../components/Body.vue'
 Vue.use(Router)
 
 export default new Router({
-  mode: "history",
+  mode: 'history',
   routes: [
     {
       path: '/login',
       name: 'Login',
-      component: Login,
+      component: Login
     },
 
     {
@@ -30,7 +30,7 @@ export default new Router({
         {
           path: '',
           name: 'Dashboard',
-          component: Dashboard,
+          component: Dashboard
         },
         {
           path: '/fornecedores',
@@ -92,13 +92,13 @@ export default new Router({
         {
           path: '/relatorios',
           name: 'Relatórios',
-          component: Relatorios,
+          component: Relatorios
         },
 
         {
           path: '/categorias',
           name: 'Categorias',
-          component: Categorias,
+          component: Categorias
         },
 
         {
@@ -106,15 +106,8 @@ export default new Router({
           name: 'Info Categoria',
           component: Categoria,
           props: true
-        },
+        }
       ]
-    },
-
-
-
-
-
-
+    }
   ]
-});
-
+})

@@ -5,9 +5,9 @@
         <v-layout wrap>
           <v-flex xs12 sm11 md5>
             <v-text-field
-              label="Nome"
               v-model="form.nome"
               v-validate="'required'"
+              label="Nome"
               data-vv-name="nome"
               :error-messages="errors.collect('nome')"
               type="text"
@@ -15,9 +15,9 @@
           </v-flex>
           <v-flex xs12 sm11 md6>
             <v-text-field
-              label="Sobrenome"
               v-model="form.sobrenome"
               v-validate="'required'"
+              label="Sobrenome"
               data-vv-name="sobrenome"
               :error-messages="errors.collect('sobrenome')"
               type="text"
@@ -25,9 +25,9 @@
           </v-flex>
           <v-flex xs12 sm11 md11>
             <v-text-field
-              label="Usuário"
-              v-model="form.login"
+              v-model="form.usuario"
               v-validate="'required'"
+              label="Usuário"
               data-vv-name="usuário"
               :error-messages="errors.collect('usuário')"
               type="text"
@@ -35,20 +35,19 @@
           </v-flex>
           <v-flex xs12 sm11 md11>
             <v-text-field
-              label="E-mail"
+              ref="e-mail"
               v-model="form.email"
-              @input="validationEmail()"
               v-validate="'required|email'"
+              label="E-mail"
               data-vv-name="e-mail"
               :error-messages="errors.collect('e-mail')"
-              ref="e-mail"
             ></v-text-field>
           </v-flex>
           <v-flex xs12 sm11 md11>
             <v-text-field
-              label="Confirmação de e-mail"
-              v-validate="'required|email|confirmed:e-mail'"
               v-model="emailConfirm"
+              v-validate="'required|email|confirmed:e-mail'"
+              label="Confirmação de e-mail"
               data-vv-name="confirmação de e-mail"
               data-vv-as="confirmação de e-mail"
               :error-messages="errors.collect('confirmação de e-mail')"
@@ -56,21 +55,21 @@
           </v-flex>
           <v-flex xs12 sm11 md11>
             <v-text-field
-              label="Senha"
+              ref="senha"
               v-model="form.senha"
-              type="password"
               v-validate="'required'"
+              label="Senha"
+              type="password"
               data-vv-name="senha"
               :error-messages="errors.collect('senha')"
-              ref="senha"
             ></v-text-field>
           </v-flex>
           <v-flex xs12 sm11 md11>
             <v-text-field
-              label="Confirmação de senha"
-              type="password"
               v-model="senhaConfirm"
               v-validate="'required|confirmed:senha'"
+              label="Confirmação de senha"
+              type="password"
               data-vv-name="confirmação de senha"
               data-vv-as="confirmação de senha"
               :error-messages="errors.collect('confirmação de senha')"
@@ -79,6 +78,17 @@
         </v-layout>
       </v-container>
     </v-card-text>
+    <alerta :snack="snack" text="Usuário cadastrado com sucesso."></alerta>
+    <v-dialog v-model="dialog" persistent max-width="290">
+      <v-card>
+        <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
+        <v-card-text>{{ msgErro }}</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" flat @click.native="dialogUser = false">Fechar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn @click="clear()">Limpar</v-btn>
@@ -88,83 +98,73 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios'
+import Alerta from '@/components/Alerta'
 export default {
+  components: {
+    Alerta
+  },
   $_veeValidate: {
-    validator: "new"
+    validator: 'new'
   },
   data: () => ({
     form: {
-      nome: "",
-      sobrenome: "",
-      login: "",
-      senha: "",
-      email: ""
+      nome: '',
+      sobrenome: '',
+      usuario: '',
+      senha: '',
+      email: ''
     },
-    senhaConfirm: "",
-    emailConfirm: ""
+    msgErro: '',
+    senhaConfirm: '',
+    emailConfirm: '',
+    snack: true,
+    dialog: false
   }),
-  props: {
-    source: String
-  },
 
   methods: {
-    signup() {
-      const user = this.form;
-      const url = "http://localhost:8080/Gestoque/usuario/sign-up";
-      let promise = this.validationEmail();
-      promise.then(resp => {
-        if (!resp) {
-          this.$validator.validateAll().then(valid => {
-            if (valid) {
-              axios
-                .post(url, user)
-                .then(resp => {
-                  if (resp.data === true) {
-                    alert("Usuário já cadastrado");
-                  } else {
-                    alert("Usuário cadastrado com sucesso.");
-                  }
-
-                  console.log(resp.data);
-                })
-                .catch(error => {
-                  console.log(error);
-                });
+    signup () {
+      return new Promise(async (resolve, reject) => {
+        try {
+          const user = this.form
+          const url = 'http://localhost:3000/usuario/signup'
+          const valid = await this.$validator.validateAll()
+          if (valid) {
+            const resp = await axios.post(url, user)
+            if (resp.status === 200) {
+              this.changeSnack()
+              this.clear()
             }
-          });
-        } else {
-          alert("Email ja cadastrado");
+          }
+        } catch (error) {
+          if (error.response.status === 400) {
+            this.msgErro = error.response.data.msg
+            this.dialog = true
+          }
         }
-      });
+      })
     },
 
-    validationEmail() {
-      const email = this.form.email;
-      const url = "http://localhost:8080/Gestoque/usuario/email-valid";
-
-      return new Promise((resolve, reject) => {
-        axios
-          .get(url, { params: { email: email } })
-          .then(resp => {
-            resolve(resp.data);
-          })
-          .catch(error => {
-            console.log(error);
-            reject(error);
-          });
-      });
+    changeSnack () {
+      this.$root.$emit('change-snack', this.snack)
     },
 
-    clear() {
-      this.form.nome = "";
-      this.form.sobrenome = "";
-      this.form.email = "";
-      this.form.login = "";
-      this.form.senha = "";
+    changeSnackUsuario () {
+      this.$root.$emit('change-snack', this.snackUsuario)
+    },
+
+    clear () {
+      this.form.nome = ''
+      this.form.sobrenome = ''
+      this.form.email = ''
+      this.emailConfirm = ''
+      this.form.usuario = ''
+      this.form.senha = ''
+      this.senhaConfirm = ''
+      this.$validator.reset()
     }
   }
-};
+}
 </script>
 
 <style>

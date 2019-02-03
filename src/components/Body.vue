@@ -11,15 +11,15 @@
 </template>
 
 <script>
-import MyMenu from "@/components/Menu";
-import Toolbar from "@/components/Toolbar";
+import MyMenu from '@/components/Menu'
+import Toolbar from '@/components/Toolbar'
 export default {
+  name: 'MyBody',
   components: {
     MyMenu,
     Toolbar
-  },
-  name: "my-body"
-};
+  }
+}
 </script>
 
 <style>
