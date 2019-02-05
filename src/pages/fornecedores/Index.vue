@@ -4,59 +4,67 @@
       <v-card>
         <v-card-title>
           <h2>Fornecedores</h2>
-          <v-spacer></v-spacer>
+          <v-spacer/>
           <v-text-field
-            v-model="search"
+            v-model="pagination.nome"
             append-icon="search"
             label="Pesquisar"
             single-line
             hide-details
-          ></v-text-field>
+          />
         </v-card-title>
         <v-data-table
+          v-model="fornecedores.fornecedores"
           :headers="headers"
-          :items="list"
-          :search="search"
+          :total-items="pagination.totalItems"
+          :items="fornecedores.fornecedores"
+          :search="pagination.nome"
           :pagination.sync="pagination"
-          :total-items="categorias"
+          :loading="loading"
         >
           <template slot="items" slot-scope="props">
-            <td class="text-xs-center text-truncate">{{ props.item.nome }}</td>
-            <td class="text-xs-center">{{ props.item.email }}</td>
-            <td class="text-xs-center">{{ props.item.cnpj | cnpj }}</td>
-            <td class="text-xs-center">{{ props.item.telefone | phone }}</td>
-            <td class="text-xs-center">{{ props.item.uf }}</td>
-            <td class="text-xs-center">
-              <v-tooltip left>
-                <v-btn
-                  slot="activator"
-                  flat
-                  icon
-                  color="primary"
-                  :to="`fornecedor/${props.item.id}`"
-                >
-                  <v-icon>edit</v-icon>
-                </v-btn>
-                <span>Editar</span>
-              </v-tooltip>
-              <v-tooltip right>
-                <v-btn
-                  slot="activator"
-                  flat
-                  icon
-                  color="red"
-                  @click="confirmDialog(props.item, props.item.id)"
-                >
-                  <v-icon>delete</v-icon>
-                </v-btn>
-                <span>Remover</span>
-              </v-tooltip>
-            </td>
+            <tr>
+              <td class="text-xs-center">{{ props.item.nome }}</td>
+              <td class="text-xs-center">{{ props.item.email }}</td>
+              <td class="text-xs-center">{{ props.item.cnpj | cnpj }}</td>
+              <td class="text-xs-center">{{ props.item.telefone | phone }}</td>
+              <td class="text-xs-center">{{ props.item.uf }}</td>
+              <td class="text-xs-center">
+                <v-tooltip left>
+                  <v-btn
+                    slot="activator"
+                    flat
+                    icon
+                    color="primary"
+                    :to="`fornecedor/${props.item.id}`"
+                  >
+                    <v-icon>edit</v-icon>
+                  </v-btn>
+                  <span>Editar</span>
+                </v-tooltip>
+                <v-tooltip right>
+                  <v-btn
+                    slot="activator"
+                    flat
+                    icon
+                    color="red"
+                    @click="confirmDialog(props.item, props.item.id, pagination)"
+                  >
+                    <v-icon>delete</v-icon>
+                  </v-btn>
+                  <span>Remover</span>
+                </v-tooltip>
+              </td>
+            </tr>
           </template>
+          <template
+            slot="pageText"
+            slot-scope="props"
+          >{{props.pageStart}}-{{props.pageStart + fornecedores.fornecedores.length - 1}} de {{ fornecedores.count }}</template>
         </v-data-table>
       </v-card>
       <div class="text-xs-center pt-2">
-        <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
+        <v-pagination v-model="pagination.page" :length="pages" @input="atualizarTable()"></v-pagination>
       </div>
     </v-container>
   </v-app>
@@ -67,7 +75,6 @@ import { mapState, mapActions } from 'vuex'
 
 export default {
   data: () => ({
-    search: '',
     headers: [
       {
         text: 'Nome',
@@ -81,30 +88,41 @@ export default {
       { text: 'Outros', align: 'center' }
     ],
 
-    pagination: {}
+    pagination: {
+      totalItems: 0,
+      nome: ''
+    }
   }),
 
   computed: {
-    ...mapState('Fornecedores', ['list']),
+    ...mapState('Fornecedores', ['fornecedores', 'loading']),
     pages () {
-      if (
-        this.pagination.rowsPerPage == null ||
-        this.pagination.totalItems == null
-      ) {
+      if (this.fornecedores.pages == null) {
         return 0
       }
 
-      return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
+      return this.fornecedores.pages
+    }
+  },
+
+  watch: {
+    pagination: function (newVal, oldVal) {
+      this.setFornecedores(newVal)
     }
   },
 
   mounted () {
-    this.setFornecedores()
+    this.setFornecedores(this.pagination)
   },
   methods: {
     ...mapActions('Fornecedores', ['setFornecedores', 'deleteFornecedor']),
 
-    confirmDialog (item, id) {
+    atualizarTable () {
+      this.setFornecedores(this.pagination)
+      this.pagination.totalItems = this.fornecedores.count
+    },
+
+    confirmDialog (item, id, pag) {
       this.$confirm('Deseja excluir este fornecedor?', {
         title: 'Confirmação',
         buttonTrueText: 'Excluir',
@@ -116,7 +134,7 @@ export default {
         width: '320'
       }).then(resp => {
         if (resp) {
-          this.deleteFornecedor([item, id])
+          this.deleteFornecedor([item, id, pag])
         }
       })
     }

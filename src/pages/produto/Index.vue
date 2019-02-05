@@ -22,10 +22,12 @@
           <v-autocomplete
             v-model="produto.fornecedorId"
             v-validate="'required'"
+            :search-input.sync="searchFornecedor"
             label="Fornecedores"
-            :items="list"
+            :items="fornecedores.fornecedores"
             item-text="nome"
             item-value="id"
+            placeholder="Digite um fornecedor"
             data-vv-name="fornecedor"
             :error-messages="errors.collect('fornecedor')"
           ></v-autocomplete>
@@ -33,10 +35,13 @@
           <v-autocomplete
             v-model="produto.categoriaId"
             v-validate="'required'"
+            :search-input.sync="searchCategoria"
             label="Categoria"
-            :items="categorias"
+            placeholder="Digite uma categoria"
+            :items="categorias.categorias"
             item-text="nome"
             item-value="id"
+            :return-object="false"
             data-vv-name="categoria"
             :error-messages="errors.collect('categoria')"
           ></v-autocomplete>
@@ -114,6 +119,8 @@ export default {
   },
   data () {
     return {
+      searchFornecedor: '',
+      searchCategoria: '',
       produto: {
         id: '',
         codigo: '',
@@ -122,6 +129,21 @@ export default {
         preco: 0,
         quantidade: '',
         fornecedorId: ''
+      },
+      paginationFornecedor: {
+        nome: '',
+        rowsPerPage: 10,
+        page: 1
+      },
+      paginationCategoria: {
+        nome: '',
+        rowsPerPage: 10,
+        page: 1
+      },
+      pagination: {
+        nome: '',
+        rowsPerPage: 10,
+        page: 1
       },
       money: {
         decimal: ',',
@@ -139,17 +161,29 @@ export default {
 
   computed: {
     ...mapState('Categorias', ['categorias']),
-    ...mapState('Fornecedores', ['list']),
+    ...mapState('Fornecedores', ['fornecedores']),
     ...mapState('Produtos', ['produtos'])
   },
 
-  created () {
-    this.setFornecedores()
-    this.setCategorias()
+  watch: {
+    searchFornecedor (newVal, oldVal) {
+      this.paginationFornecedor.nome = newVal
+      this.setFornecedores(this.paginationFornecedor)
+    },
+    searchCategoria (newVal, oldVal) {
+      this.paginationCategoria.nome = newVal
+      this.setCategorias(this.paginationCategoria)
+    }
   },
+
+  created () {},
 
   mounted () {
     this.getProduto(this.id)
+    setTimeout(() => {
+      this.setFornecedores(this.pagination)
+      this.setCategorias(this.pagination)
+    }, 500)
   },
 
   methods: {
@@ -238,7 +272,7 @@ export default {
     updateProduto (id, produto) {
       this.replacePreco(produto)
       const codigo = this.produto.codigo
-      const url = `http://localhost:8080/Gestoque/produto/update/${id}`
+      const url = `http://localhost:3000/produto/${id}`
       this.$validator.validateAll().then(valid => {
         if (valid) {
           axios

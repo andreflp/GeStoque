@@ -8,7 +8,7 @@
           <v-text-field
             v-model="pagination.nome"
             append-icon="search"
-            label="Categorias"
+            label="Pesquisar"
             single-line
             hide-details
           />
@@ -67,12 +67,11 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   data () {
     return {
-      nome: '',
       headers: [
         {
           text: 'Nome',
@@ -107,6 +106,7 @@ export default {
   watch: {
     pagination: function (newVal, oldVal) {
       this.setCategorias(newVal)
+      console.log('asdasd')
     }
   },
 
@@ -116,7 +116,6 @@ export default {
 
   methods: {
     ...mapActions('Categorias', ['setCategorias', 'deleteCategoria']),
-    ...mapMutations('Categorias', ['SET_CATEGORIAS']),
 
     atualizarTable () {
       this.setCategorias(this.pagination)
@@ -136,7 +135,6 @@ export default {
       }).then(resp => {
         if (resp) {
           this.deleteCategoria([item, id, pag])
-          console.log({ pages: this.categorias.pages })
         }
       })
     }

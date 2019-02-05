@@ -1,7 +1,12 @@
 const SET_FORNECEDORES = (state, obj) => {
-  state.list = obj.list
+  state.fornecedores = obj.fornecedores
+}
+
+const LOADING_FORNECEDORES = (state, param) => {
+  state.loading = param
 }
 
 export default {
-  SET_FORNECEDORES
+  SET_FORNECEDORES,
+  LOADING_FORNECEDORES
 }

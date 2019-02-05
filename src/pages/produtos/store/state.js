@@ -1,3 +1,4 @@
 export default {
-  produtos: []
+  produtos: [],
+  loading: false
 }
