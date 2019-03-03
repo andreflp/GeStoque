@@ -15,13 +15,13 @@
         </v-card-title>
 
         <v-data-table
-          v-model="produtos.produtos"
           :headers="headers"
           :total-items="pagination.totalItems"
           :items="produtos.produtos"
           :search="pagination.nome"
           :pagination.sync="pagination"
           :loading="loading"
+          disable-initial-sort
         >
           <template slot="items" slot-scope="props">
             <tr>

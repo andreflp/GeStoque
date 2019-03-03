@@ -37,11 +37,10 @@
             v-validate="'required'"
             :search-input.sync="searchCategoria"
             label="Categoria"
-            placeholder="Digite uma categoria"
             :items="categorias.categorias"
+            placeholder="Digite uma categoria"
             item-text="nome"
             item-value="id"
-            :return-object="false"
             data-vv-name="categoria"
             :error-messages="errors.collect('categoria')"
           ></v-autocomplete>
@@ -49,8 +48,8 @@
           <v-text-field
             ref="preco"
             v-model.lazy="produto.preco"
-            v-money="money"
             v-validate="'required'"
+            v-money="money"
             label="Preço"
             data-vv-name="preço"
             :error-messages="errors.collect('preço')"
@@ -73,20 +72,10 @@
         <v-dialog v-model="dialog" persistent max-width="290">
           <v-card>
             <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
-            <v-card-text>Produto/código já cadastrado.</v-card-text>
+            <v-card-text>{{ errorMessage }}</v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialog2" persistent max-width="290">
-          <v-card>
-            <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
-            <v-card-text>{{msg}}</v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" flat @click.native="dialog2 = false">Fechar</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -111,6 +100,7 @@ export default {
   },
 
   directives: { money: VMoney },
+
   props: {
     id: {
       type: [Number, String],
@@ -119,6 +109,7 @@ export default {
   },
   data () {
     return {
+      menuProps: { closeOnContentClick: true },
       searchFornecedor: '',
       searchCategoria: '',
       produto: {
@@ -140,17 +131,13 @@ export default {
         rowsPerPage: 10,
         page: 1
       },
-      pagination: {
-        nome: '',
-        rowsPerPage: 10,
-        page: 1
-      },
       money: {
         decimal: ',',
         thousands: '.',
         precision: 2,
         masked: false
       },
+      errorMessage: '',
       masks,
       snack: true,
       dialog: false,
@@ -167,6 +154,7 @@ export default {
 
   watch: {
     searchFornecedor (newVal, oldVal) {
+      console.log(newVal)
       this.paginationFornecedor.nome = newVal
       this.setFornecedores(this.paginationFornecedor)
     },
@@ -176,14 +164,13 @@ export default {
     }
   },
 
-  created () {},
+  created () {
+    this.getProduto(this.id)
+  },
 
   mounted () {
-    this.getProduto(this.id)
-    setTimeout(() => {
-      this.setFornecedores(this.pagination)
-      this.setCategorias(this.pagination)
-    }, 500)
+    this.setFornecedores(this.paginationFornecedor)
+    this.setCategorias(this.paginationCategoria)
   },
 
   methods: {
@@ -196,10 +183,15 @@ export default {
     },
 
     replacePreco (produto) {
-      produto.preco = this.produto.preco
-        .replace('R$', '')
-        .replace('.', '')
-        .replace(',', '.')
+      return new Promise(async (resolve, reject) => {
+        if (produto.preco.includes(',') && produto.preco.includes('.')) {
+          produto.preco = await this.produto.preco
+            .replace(',', '.')
+            .replace('.', '')
+        } else {
+          produto.preco = await this.produto.preco.replace(',', '.')
+        }
+      })
     },
 
     searchAndSave (produto) {
@@ -227,33 +219,14 @@ export default {
       }
     },
 
-    /* searchCategoria (categoria) {
-      const categoriaResult = this.categorias.filter(item => item === categoria)
-      if (categoriaResult && categoriaResult.length > 0) {
-        this.addProduto(produto)
-      } else {
-        this.msg = 'Categoria não encontrada.'
-        this.dialog2 = true
-      }
-    },
-
-    searchFornecedor (fornecedor) {
-      const fornecedorResult = this.list.filter(item => item === fornecedor)
-      if (fornecedorResult && fornecedorResult.length > 0) {
-        this.addProduto(produto)
-      } else {
-        this.msg = 'Fornecedor não encontrado.'
-        this.dialog2 = true
-      }
-    }, */
-
     addProduto (produto) {
       return new Promise(async (resolve, reject) => {
         try {
-          this.replacePreco(produto)
           const url = 'http://localhost:3000/produto'
           const valid = await this.$validator.validateAll()
           if (valid) {
+            this.replacePreco(produto)
+            console.log(produto)
             const resp = await axios.post(url, produto)
             if (resp.status === 200) {
               this.changeSnack()
@@ -262,7 +235,7 @@ export default {
           }
         } catch (error) {
           if (error.response.status === 400) {
-            this.msgErro = error.response.data.msg
+            this.errorMessage = error.response.data.message
             this.dialog = true
           }
         }
@@ -270,25 +243,20 @@ export default {
     },
 
     updateProduto (id, produto) {
-      this.replacePreco(produto)
-      const codigo = this.produto.codigo
-      const url = `http://localhost:3000/produto/${id}`
-      this.$validator.validateAll().then(valid => {
-        if (valid) {
-          axios
-            .put(url, produto, {
-              params: { codigo: codigo }
-            })
-            .then(resp => {
-              if (resp.data === true) {
-                this.dialog = true
-              } else if (resp.data === false) {
-                this.$router.push('/produtos')
-              }
-            })
-            .catch(error => {
-              console.log(error)
-            })
+      return new Promise(async (resolve, reject) => {
+        try {
+          const url = `http://localhost:3000/produto/${id}`
+          const valid = await this.$validator.validateAll()
+          if (valid) {
+            this.replacePreco(produto)
+            const resp = await axios.put(url, produto)
+            if (resp.status === 200) {
+              this.$router.push('/produtos')
+            }
+          }
+        } catch (error) {
+          this.dialog = true
+          console.log(error)
         }
       })
     },
@@ -306,7 +274,7 @@ export default {
 
     getProduto (id) {
       if (id) {
-        const produtos = this.produtos
+        const produtos = this.produtos.produtos
         const produtoResult = produtos.filter(item => item.id == id)
         if (produtoResult && produtoResult.length > 0) {
           this.produto = produtoResult[0]

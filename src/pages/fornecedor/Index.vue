@@ -125,7 +125,7 @@
           <v-dialog v-model="dialog" persistent max-width="290">
             <v-card>
               <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
-              <v-card-text>Fornecedor/CNPJ já cadastrado.</v-card-text>
+              <v-card-text>{{errorMessage}}</v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
@@ -178,12 +178,12 @@ export default {
       dialog: false,
       masks,
       snack: true,
-      msgErro: ''
+      errorMessage: ''
     }
   },
 
   computed: {
-    ...mapState('Fornecedores', ['list'])
+    ...mapState('Fornecedores', ['fornecedores'])
   },
 
   mounted () {
@@ -222,7 +222,7 @@ export default {
           }
         } catch (error) {
           if (error.response.status === 400) {
-            this.msgErro = error.response.data.msg
+            this.errorMessage = error.response.data.message
             this.dialog = true
           }
         }
@@ -245,7 +245,7 @@ export default {
           }
         } catch (error) {
           if (error.response.status === 400) {
-            this.msgErro = error.response.data.msg
+            this.errorMessage = error.response.data.message
             this.dialog = true
           }
         }
@@ -254,7 +254,7 @@ export default {
 
     getFornecedor (id) {
       if (id) {
-        const fornecedores = this.list
+        const fornecedores = this.fornecedores.fornecedores
         // eslint-disable-next-line eqeqeq
         const fornecedoresResult = fornecedores.filter(item => item.id == id)
         if (fornecedoresResult && fornecedoresResult.length > 0) {

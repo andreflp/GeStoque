@@ -92,90 +92,62 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
-
-import axios from "axios";
+import { mapState, mapActions } from 'vuex'
 
 export default {
-  name: "dashboard",
+  name: 'Dashboard',
 
-  data() {
+  data () {
     return {
       numStart: false,
-      quantidadeProdutos: "",
-      quantidadeFornecedores: "",
-      qtdEntradas: "",
-      qtdSaidas: ""
-    };
-  },
-
-  created() {
-    this.setFornecedores();
-    this.setProdutos();
-    this.listsLength();
-  },
-
-  mounted() {
-    setTimeout(() => {
-      this.listsLength();
-      setTimeout(() => {
-        this.numStart = true;
-        setTimeout(() => {
-          this.startAnimate();
-        }, 1000);
-      }, 600);
-    }, 500);
-
-    this.countEntrada();
-    this.countSaida();
+      quantidadeProdutos: '',
+      quantidadeFornecedores: '',
+      qtdEntradas: '',
+      qtdSaidas: ''
+    }
   },
 
   computed: {
-    ...mapState("Fornecedores", ["list"]),
-    ...mapState("Produtos", ["produtos"])
+    ...mapState('Fornecedores', ['fornecedores']),
+    ...mapState('Produtos', ['produtos'])
+  },
+
+  created () {
+    this.listsLength()
+  },
+
+  mounted () {
+    setTimeout(() => {
+      this.listsLength()
+      setTimeout(() => {
+        this.numStart = true
+        setTimeout(() => {
+          this.startAnimate()
+        }, 1000)
+      }, 600)
+    }, 500)
+
+    this.countEntrada()
+    this.countSaida()
   },
 
   methods: {
-    ...mapActions("Produtos", ["setProdutos"]),
-    ...mapActions("Fornecedores", ["setFornecedores"]),
+    ...mapActions('Produtos', ['setProdutos']),
+    ...mapActions('Fornecedores', ['setFornecedores']),
 
-    listsLength() {
-      this.quantidadeProdutos = this.produtos.length;
-      this.quantidadeFornecedores = this.list.length;
+    listsLength () {
+      this.quantidadeProdutos = this.produtos.length
+      this.quantidadeFornecedores = this.fornecedores.length
     },
 
-    countEntrada() {
-      let url = "http://localhost:8080/Gestoque/movimentacao/count-entrada";
-      axios
-        .get(url)
-        .then(resp => {
-          this.qtdEntradas = resp.data;
-        })
-        .catch(erro => {
-          console.log(error);
-        });
-    },
-
-    countSaida() {
-      let url = "http://localhost:8080/Gestoque/movimentacao/count-saida";
-      axios
-        .get(url)
-        .then(resp => {
-          this.qtdSaidas = resp.data;
-        })
-        .catch(erro => {
-          console.log(error);
-        });
-    },
-
-    startAnimate() {
-      this.$refs.myNum1.start();
-      this.$refs.myNum2.start();
-      this.$refs.myNum3.start();
-      this.$refs.myNum4.start();
+    startAnimate () {
+      this.$refs.myNum1.start()
+      this.$refs.myNum2.start()
+      this.$refs.myNum3.start()
+      this.$refs.myNum4.start()
     }
   }
-};
+}
 </script>
 
 <style>

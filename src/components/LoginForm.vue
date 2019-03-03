@@ -4,7 +4,7 @@
       <v-container grid-list-md>
         <v-layout wrap>
           <v-flex xs12 sm11 md11>
-            <v-text-field v-model="form.usuario" prepend-icon="person" label="Login" type="text"></v-text-field>
+            <v-text-field v-model="form.usuario" prepend-icon="person" label="Login" type="text"/>
           </v-flex>
           <v-flex xs12 sm11 md11>
             <v-text-field
@@ -13,14 +13,14 @@
               prepend-icon="lock"
               label="Senha"
               type="password"
-            ></v-text-field>
+            />
           </v-flex>
         </v-layout>
       </v-container>
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn @click="authentication()">Login</v-btn>
+      <v-btn elevation @click="authentication()">Login</v-btn>
     </v-card-actions>
     <v-snackbar
       v-model="snackBar"
@@ -70,13 +70,11 @@ export default {
           const resp = await this.login(this.form)
           if (resp.status === 200) {
             this.$router.push('/')
-            console.log('snackbar', this.snackBar)
-            console.log('snack', this.snack)
           }
         } catch (error) {
-          console.log(error.response.status)
-          console.log({ errorAuth: error })
-          this.snackBar = this.snack
+          if (error.response.status === 403) {
+            this.snackBar = this.snack
+          }
         }
       })
     }

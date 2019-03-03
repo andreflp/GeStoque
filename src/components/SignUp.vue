@@ -82,10 +82,10 @@
     <v-dialog v-model="dialog" persistent max-width="290">
       <v-card>
         <v-card-title class="headline yellow lighten-4">Aviso</v-card-title>
-        <v-card-text>{{ msgErro }}</v-card-text>
+        <v-card-text>{{ errorMessage }}</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" flat @click.native="dialogUser = false">Fechar</v-btn>
+          <v-btn color="primary" flat @click.native="dialog = false">Fechar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -115,7 +115,7 @@ export default {
       senha: '',
       email: ''
     },
-    msgErro: '',
+    errorMessage: '',
     senhaConfirm: '',
     emailConfirm: '',
     snack: true,
@@ -138,7 +138,7 @@ export default {
           }
         } catch (error) {
           if (error.response.status === 400) {
-            this.msgErro = error.response.data.msg
+            this.errorMessage = error.response.data.message
             this.dialog = true
           }
         }
@@ -147,10 +147,6 @@ export default {
 
     changeSnack () {
       this.$root.$emit('change-snack', this.snack)
-    },
-
-    changeSnackUsuario () {
-      this.$root.$emit('change-snack', this.snackUsuario)
     },
 
     clear () {

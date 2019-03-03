@@ -14,13 +14,13 @@
           />
         </v-card-title>
         <v-data-table
-          v-model="categorias.categorias"
           :headers="headers"
           :total-items="pagination.totalItems"
           :items="categorias.categorias"
           :search="pagination.nome"
           :pagination.sync="pagination"
           :loading="loading"
+          disable-initial-sort
         >
           <template slot="items" slot-scope="props">
             <tr>
@@ -76,18 +76,17 @@ export default {
         {
           text: 'Nome',
           align: 'center',
-          value: 'nome',
-          sortable: true
+          value: 'nome'
         },
         {
           text: 'Outros',
-          align: 'center',
-          sortable: true
+          align: 'center'
         }
       ],
       pagination: {
         totalItems: 0,
-        nome: ''
+        nome: '',
+        sortBy: ''
       }
     }
   },
@@ -104,14 +103,15 @@ export default {
   },
 
   watch: {
-    pagination: function (newVal, oldVal) {
-      this.setCategorias(newVal)
-      console.log('asdasd')
+    pagination: function (val) {
+      this.setCategorias(val)
     }
   },
 
+  created () {},
+
   mounted () {
-    this.setCategorias(this.pagination)
+    this.atualizarTable()
   },
 
   methods: {
@@ -120,6 +120,15 @@ export default {
     atualizarTable () {
       this.setCategorias(this.pagination)
       this.pagination.totalItems = this.categorias.count
+    },
+
+    changeSort (column) {
+      if (this.pagination.sortBy === column) {
+        this.pagination.descending = !this.pagination.descending
+      } else {
+        this.pagination.sortBy = column
+        this.pagination.descending = false
+      }
     },
 
     confirmDialog (item, id, pag) {

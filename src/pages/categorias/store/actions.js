@@ -8,7 +8,8 @@ const setCategorias = async ({ commit }, pagination) => {
       params: {
         page: pagination.page,
         rowsPerPage: pagination.rowsPerPage,
-        nome: pagination.nome
+        nome: pagination.nome,
+        descending: pagination.descending
       }
     })).data.categorias
     commit('SET_CATEGORIAS', { categorias })

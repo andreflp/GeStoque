@@ -21,6 +21,7 @@
           :search="pagination.nome"
           :pagination.sync="pagination"
           :loading="loading"
+          disable-initial-sort
         >
           <template slot="items" slot-scope="props">
             <tr>

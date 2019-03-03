@@ -3,16 +3,16 @@
     <v-container>
       <v-flex xs12 sm8>
         <form ref="form" @submit.prevent="submit">
-          <v-combobox
-            v-model="movimentacao.produto"
+          <v-autocomplete
+            v-model="movimentacao.produtoId"
             v-validate="'required'"
             label="Produto"
-            :items="produtos"
+            :items="produtos.produtos"
             item-text="nome"
             item-value="id"
             data-vv-name="produto"
             :error-messages="errors.collect('produto')"
-          ></v-combobox>
+          ></v-autocomplete>
 
           <v-select
             v-model="movimentacao.tipo"
@@ -79,12 +79,17 @@ export default {
     return {
       movimentacao: {
         tipo: '',
-        produto: '',
+        produtoId: '',
         quantidade: ''
       },
       tipos: [{ nome: 'Entrada', value: 'E' }, { nome: 'Saida', value: 'S' }],
       dialog: false,
-      dialog2: false
+      dialog2: false,
+      pagination: {
+        rowsPerPage: 10,
+        page: 1,
+        nome: ''
+      }
     }
   },
 
@@ -93,7 +98,7 @@ export default {
   },
 
   created () {
-    this.setProdutos()
+    this.setProdutos(this.pagination)
   },
 
   mounted () {
@@ -104,9 +109,12 @@ export default {
     ...mapActions('Produtos', ['setProdutos']),
 
     searchAndSave (movimentacao) {
-      const produto = movimentacao.produto
-      const produtoResult = this.produtos.filter(item => item === produto)
-
+      const produto = movimentacao.produtoId
+      console.log(produto)
+      const produtoResult = this.produtos.produtos.filter(
+        item => item.id == produto
+      )
+      console.log(produtoResult)
       if (produtoResult && produtoResult.length > 0) {
         this.addMovimentacao(movimentacao)
       } else {
@@ -115,24 +123,22 @@ export default {
     },
 
     addMovimentacao (movimentacao) {
-      const url = 'http://localhost:8080/Gestoque/movimentacao/new'
-      this.$validator.validateAll().then(valid => {
-        if (valid) {
-          axios
-            .post(url, movimentacao)
-            .then(resp => {
-              if (resp.data === true) {
-                this.$router.push('/produtos')
-              } else if (resp.data === false) {
-                this.dialog = true
-              }
-            })
-            .catch(error => {
-              console.error(error)
-            })
+      return new Promise(async (resolve, reject) => {
+        try {
+          const url = 'http://localhost:3000/movimentacao'
+          const valid = await this.$validator.validateAll()
+          if (valid) {
+            const resp = await axios.post(url, movimentacao)
+            if (resp.status === 200) {
+              this.$router.push('/produtos')
+            }
+          }
+        } catch (error) {
+          this.dialog = true
         }
       })
     },
+
     changeSnack () {
       this.$root.$emit('change-snack', this.snack)
     },
@@ -145,11 +151,11 @@ export default {
 
     getProduto (id) {
       if (id) {
-        const produtos = this.produtos
-        const produtoResult = produtos.filter(item => item.id === id)
+        const produtos = this.produtos.produtos
+        const produtoResult = produtos.filter(item => item.id == id)
         if (produtoResult && produtoResult.length > 0) {
           this.produto = produtoResult[0]
-          this.movimentacao.produto = this.produto
+          this.movimentacao.produtoId = this.produto.id
         }
       }
     }

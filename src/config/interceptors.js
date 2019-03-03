@@ -1,17 +1,18 @@
-export function interceptors (axios) {
+export function interceptors (axios, router) {
   axios.defaults.headers.common['Authorization'] = `${localStorage.getItem(
     'token'
   )}`
 
-  axios.interceptors.response.use(undefined, err => {
-    return new Promise((resolve, reject) => {
-      let res = err.response
-      // eslint-disable-next-line eqeqeq
-      if (res.data.error.message == 'jwt expired') {
-        localStorage.removeItem('token')
-        this.$router.push('/login')
-      }
-      resolve()
-    })
-  })
+  /* axios.interceptors.response.use(undefined, error => {
+    let res = error.response
+    console.log({ error })
+
+    console.log(error.response.data)
+
+    console.log('message jwt', res.data.error.message)
+    if (res.data.error.message == 'jwt expired') {
+      localStorage.removeItem('token')
+      router.push('/login')
+    }
+  }) */
 }
